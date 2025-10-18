@@ -27,7 +27,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
   const [recipientEmail, setRecipientEmail] = useState('');
   const [recipientPhone, setRecipientPhone] = useState('');
 
-  const presetAmounts = [25, 50, 100];
+  const presetAmounts = [50, 75, 100];
 
   const handleAnalyze = async () => {
     setAnalyzing(true);
@@ -148,7 +148,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                       <Input
                         id="custom-amount"
                         type="number"
-                        placeholder="Enter custom amount"
+                        placeholder="75"
                         value={customAmount}
                         onChange={(e) => {
                           setCustomAmount(e.target.value);
@@ -169,7 +169,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                       <Label htmlFor="message">Personal Message (Optional)</Label>
                       <Textarea
                         id="message"
-                        placeholder="Happy Birthday! Enjoy a detail before lunch 🎉"
+                        placeholder="Happy Birthday! Get the X5 detailed before lunch 🚗"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         rows={3}

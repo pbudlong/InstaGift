@@ -161,7 +161,7 @@ export default function PaymentSuccess({ giftId, giftUrl, onHome }: PaymentSucce
                       <Input
                         id="phone"
                         type="tel"
-                        placeholder="+1 (555) 123-4567"
+                        placeholder="+1-555-0123"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         data-testid="input-phone-number"
