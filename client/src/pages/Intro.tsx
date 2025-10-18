@@ -26,7 +26,7 @@ export default function Intro() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary mt-1">•</span>
-                <span>Local businesses don't sell gift cards</span>
+                <span>Most local businesses don't sell gift cards</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary mt-1">•</span>
