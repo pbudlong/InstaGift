@@ -18,30 +18,48 @@ export default function Intro() {
             Last-minute gifting sucks.
           </h1>
 
-          <div className="space-y-6 text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            <p>
-              Generic Amazon cards feel impersonal. Local businesses don't sell gift cards. 
-              I spent hours manually creating one gift card for a friend.
-            </p>
+          <div className="space-y-8 text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+            <ul className="space-y-4 text-left">
+              <li className="flex items-start gap-3">
+                <span className="text-primary mt-1">•</span>
+                <span>Generic Amazon cards feel impersonal</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary mt-1">•</span>
+                <span>Local businesses don't sell gift cards</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary mt-1">•</span>
+                <span>I spent hours manually creating one gift card for a friend</span>
+              </li>
+            </ul>
             
             <p className="text-foreground font-semibold">
               InstaGift makes this as easy as buying a Starbucks card - but for <span className="text-primary">ANY</span> local business.
             </p>
             
-            <p>
-              Paste a URL, AI creates a beautiful branded card, real money loads via Stripe, 
-              and it goes straight to their phone's wallet.
-            </p>
+            <ul className="space-y-4 text-left">
+              <li className="flex items-start gap-3">
+                <span className="text-primary mt-1">•</span>
+                <span>Paste a URL</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary mt-1">•</span>
+                <span>AI creates a beautiful branded card</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary mt-1">•</span>
+                <span>Real money loads via Stripe</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary mt-1">•</span>
+                <span>Goes straight to their phone's wallet</span>
+              </li>
+            </ul>
 
-            <div className="pt-4 space-y-3 text-lg">
-              <p className="text-muted-foreground">
-                Built in 4 hours on <strong className="text-foreground">Replit</strong>
-              </p>
-              <p className="text-muted-foreground">
-                Powered by <strong className="text-foreground">Stripe Issuing</strong> and <strong className="text-foreground">OpenAI</strong>
-              </p>
-              <p className="text-primary font-semibold text-xl">
-                Ready (almost) to ship!
+            <div className="pt-6 text-base text-muted-foreground">
+              <p>
+                Built in 4 hours on <strong className="text-foreground">Replit</strong> • Powered by <strong className="text-foreground">Stripe Issuing</strong> and <strong className="text-foreground">OpenAI</strong> • <span className="text-primary font-semibold">Ready (almost) to ship!</span>
               </p>
             </div>
           </div>
