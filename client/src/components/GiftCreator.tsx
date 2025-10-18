@@ -31,18 +31,25 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
 
   const handleAnalyze = async () => {
     setAnalyzing(true);
-    // Simulate AI analysis
-    setTimeout(() => {
-      setBusinessData({
-        businessName: 'Sparkle Auto Spa',
-        businessType: 'Car Wash & Detailing',
-        brandColors: ['#3b82f6', '#1d4ed8'],
-        emoji: '🚗',
-        vibe: 'Clean, modern, professional',
-        description: 'Premium auto detailing and car wash services'
+    try {
+      const response = await fetch('/api/analyze-business', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to analyze business');
+      }
+      
+      const data = await response.json();
+      setBusinessData(data);
+    } catch (error) {
+      console.error('Analysis error:', error);
+      alert('Failed to analyze business. Please try again.');
+    } finally {
       setAnalyzing(false);
-    }, 2000);
+    }
   };
 
   const handlePurchase = () => {
