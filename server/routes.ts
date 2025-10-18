@@ -2,21 +2,26 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import Stripe from "stripe";
 import { businessAnalysisSchema, insertGiftSchema } from "@shared/schema";
 import { z } from "zod";
-
-if (!process.env.ANTHROPIC_API_KEY) {
-  throw new Error('Missing required secret: ANTHROPIC_API_KEY');
-}
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required secret: STRIPE_SECRET_KEY');
 }
 
-const anthropic = new Anthropic({
+if (!process.env.ANTHROPIC_API_KEY && !process.env.OPENAI_API_KEY) {
+  throw new Error('Missing required secret: Either ANTHROPIC_API_KEY or OPENAI_API_KEY is required');
+}
+
+const anthropic = process.env.ANTHROPIC_API_KEY ? new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
-});
+}) : null;
+
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+}) : null;
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -47,18 +52,47 @@ Please analyze the business and return a JSON object with the following structur
 Make educated guesses based on the URL and common business patterns. Be creative but realistic.
 Return ONLY the JSON object, no other text.`;
 
-      const message = await anthropic.messages.create({
-        model: "claude-3-5-sonnet-20240620",
-        max_tokens: 1024,
-        messages: [{
-          role: "user",
-          content: prompt
-        }]
-      });
+      let responseText = '';
+      
+      try {
+        if (anthropic) {
+          console.log("Trying Anthropic Claude for business analysis...");
+          const message = await anthropic.messages.create({
+            model: "claude-3-5-sonnet-20240620",
+            max_tokens: 1024,
+            messages: [{
+              role: "user",
+              content: prompt
+            }]
+          });
 
-      const responseText = message.content[0].type === 'text' 
-        ? message.content[0].text 
-        : '';
+          responseText = message.content[0].type === 'text' 
+            ? message.content[0].text 
+            : '';
+          console.log("Anthropic analysis successful");
+        } else {
+          throw new Error("Anthropic not available");
+        }
+      } catch (anthropicError: any) {
+        console.error("Anthropic failed:", anthropicError.message);
+        
+        if (!openai) {
+          throw new Error("Both Anthropic and OpenAI are unavailable");
+        }
+        
+        console.log("Falling back to OpenAI...");
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [{
+            role: "user",
+            content: prompt
+          }],
+          max_tokens: 1024,
+        });
+        
+        responseText = completion.choices[0]?.message?.content || '';
+        console.log("OpenAI analysis successful");
+      }
       
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
