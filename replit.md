@@ -38,8 +38,15 @@ Preferred communication style: Simple, everyday language.
 **Key User Flows**
 1. Landing page with hero section and CTA
 2. Gift creation flow: URL input → AI analysis → customization → checkout
-3. Payment processing via Stripe Elements
-4. Gift redemption view with wallet integration options
+3. Payment processing via Stripe Elements (test card: 4242 4242 4242 4242)
+4. Payment success page with:
+   - Preview gift card link
+   - SMS sending tab (simulated, no actual Twilio)
+   - Link sharing tab with QR code
+5. Gift redemption view with:
+   - Branded gift card display
+   - Real Stripe Issuing card details (PAN, expiry, CVV)
+   - "Add to Apple Pay/Google Pay" button (simulated provisioning with confetti)
 
 ### Backend Architecture
 
@@ -57,8 +64,9 @@ Preferred communication style: Simple, everyday language.
 **Core API Endpoints**
 - `POST /api/analyze-business` - AI-powered business analysis from URL
 - `POST /api/create-payment-intent` - Stripe payment initialization
-- `POST /api/gifts` - Gift card creation
+- `POST /api/create-gift` - Gift card creation with Stripe Issuing virtual card
 - `GET /api/gifts/:id` - Gift card retrieval
+- `POST /api/send-gift-sms` - Simulated SMS sending (demo mode, logs only)
 
 **Data Storage**
 - In-memory storage using Map data structures (MemStorage class)
@@ -69,16 +77,25 @@ Preferred communication style: Simple, everyday language.
 **Business Logic**
 - AI business analysis generates: business name, type, brand colors, emoji, vibe, and description
 - Gift card generation with customizable amounts and personalized messages
-- Stripe card issuance integration prepared (virtual card numbers, expiry, CVV)
+- **Real Stripe Issuing integration**: Creates actual virtual cards with PAN, expiry, CVV
+  - Creates cardholder for recipient (name, email, phone)
+  - Issues virtual card with spending limit matching gift amount
+  - Retrieves full card details via Stripe API (expand parameter)
+  - **Note**: Demo implementation stores card details in memory (not production-safe per PCI DSS)
 
 ### External Dependencies
 
-**Payment Processing**
+**Payment Processing & Issuing**
 - Stripe API for payment intents and checkout flows
 - Stripe Elements (React) for secure payment form rendering
 - Stripe.js for client-side tokenization
+- **Stripe Issuing API** for real virtual card creation:
+  - Creates cardholders via `/v1/issuing/cardholders`
+  - Issues virtual cards via `/v1/issuing/cards`
+  - Retrieves card details with `expand: ['number', 'cvc']`
+  - Spending limits configured per gift amount
 - Environment variables: `STRIPE_SECRET_KEY` (server), `VITE_STRIPE_PUBLIC_KEY` (client)
-- Architecture supports future Stripe Issuing integration for virtual card generation
+- Test environment uses: `TESTING_STRIPE_SECRET_KEY`, `TESTING_VITE_STRIPE_PUBLIC_KEY`
 
 **AI Services**
 - Anthropic Claude API for intelligent business website analysis
@@ -107,3 +124,18 @@ Preferred communication style: Simple, everyday language.
 - Production build creates bundled server and optimized client assets
 - Static file serving in production mode
 - Environment-based configuration (NODE_ENV)
+
+## Demo Configuration
+
+**Hackathon Demo Scenario**
+- Business: Sparkle Auto Spa (car wash)
+- Gift amount: $75
+- Recipient: Jake Smith
+- Message: "Happy Birthday! Get the X5 detailed before lunch 🚗"
+- All form placeholders pre-filled with demo values
+
+**Demo Limitations (Hackathon MVP)**
+- SMS sending is simulated (no Twilio integration, just logs and success messages)
+- Wallet provisioning is simulated (confetti + success message, no actual Apple/Google Pay API)
+- Card details stored in memory (not PCI-compliant for production; would require Stripe ephemeral keys)
+- No authentication or user accounts (open demo)
