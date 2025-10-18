@@ -77,7 +77,7 @@ function CheckoutForm({ onSuccess, amount }: CheckoutFormProps) {
             Processing...
           </>
         ) : (
-          `Purchase & Finish Setting Up Gift Card`
+          `Pay $${amount}`
         )}
       </Button>
     </form>
