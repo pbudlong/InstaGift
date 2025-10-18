@@ -93,6 +93,27 @@ interface CheckoutProps {
 }
 
 export default function Checkout({ clientSecret, amount, businessName, onSuccess, onBack }: CheckoutProps) {
+  const elementsOptions = {
+    clientSecret,
+    appearance: {
+      theme: 'stripe' as const,
+    },
+    defaultValues: {
+      billingDetails: {
+        name: 'Demo User',
+        email: 'demo@example.com',
+        phone: '+1 (555) 555-5555',
+        address: {
+          line1: '123 Main St',
+          city: 'San Francisco',
+          state: 'CA',
+          postal_code: '94111',
+          country: 'US',
+        },
+      },
+    },
+  };
+
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="max-w-2xl mx-auto px-6">
@@ -114,9 +135,13 @@ export default function Checkout({ clientSecret, amount, businessName, onSuccess
             <p className="text-muted-foreground">
               You're creating a ${amount} gift card for {businessName}
             </p>
+            <div className="mt-4 p-3 bg-muted/50 rounded-md text-sm">
+              <p className="font-medium mb-1">Demo Test Card:</p>
+              <p className="text-muted-foreground">4242 4242 4242 4242 • Exp: 12/28 • CVV: 123 • ZIP: 94111</p>
+            </div>
           </CardHeader>
           <CardContent>
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <Elements stripe={stripePromise} options={elementsOptions}>
               <CheckoutForm onSuccess={onSuccess} amount={amount} />
             </Elements>
           </CardContent>
