@@ -35,15 +35,28 @@ Preferred communication style: Simple, everyday language.
 - Local component state with React hooks for UI interactions
 - Custom toast notifications for user feedback
 
+**Routing & Navigation**
+- `/` - Intro page: Problem/solution landing with "See How It Works" CTA
+- `/demo-guide` - Demo guide: Explains prefilled scenario and 4-step walkthrough
+- `/home` - Home page: Main gift creation CTA and hero section
+- `/create` - Gift creator flow
+- `/gift/:id` - Gift redemption view for recipients
+- `/tech` - Technical implementation overview (real vs simulated features)
+
 **Key User Flows**
-1. Landing page with hero section and CTA
-2. Gift creation flow: URL input → AI analysis → customization → checkout
-3. Payment processing via Stripe Elements (test card: 4242 4242 4242 4242)
-4. Payment success page with:
-   - Preview gift card link
+1. **Hackathon Presentation Flow** (for judges):
+   - Intro page (/) → Demo Guide → Home → Gift Creation → Payment Success → Tech Stack
+2. **Gift Creation Flow**:
+   - Home page with hero section and CTA
+   - Gift creation: URL input → AI analysis → customization → checkout
+   - Payment processing via Stripe Elements (test card: 4242 4242 4242 4242)
+3. **Payment Success Page**:
+   - Preview gift card link (shows card design only)
    - SMS sending tab (simulated, no actual Twilio)
    - Link sharing tab with QR code
-5. Gift redemption view with:
+   - "View Full Recipient Experience" CTA appears after SMS/link actions
+   - "View Tech Stack" button links to `/tech` page
+4. **Gift Redemption View** (recipient experience):
    - Branded gift card display
    - Real Stripe Issuing card details (PAN, expiry, CVV)
    - "Add to Apple Pay/Google Pay" button (simulated provisioning with confetti)
