@@ -1,0 +1,245 @@
+Giftly - Hackathon Build Prompt for Replit
+The Story & Vision
+I recently created a gift card manually for a friend before his birthday lunch. He was going to get his BMW X5 washed at his favorite local car wash before meeting us. I used ChatGPT to combine an image of his BMW with the car wash's branding, then embedded a link to a virtual card I'd bought him. It worked, but it was super clunky and required a lot of hand-holding.
+The Vision: What if creating a personalized gift card for ANY local merchant was as easy as buying a Starbucks gift card online?
+That's Giftly. You paste a local business URL, AI generates a beautiful branded gift card, you load it with real money via Stripe, and the recipient gets it in their Apple/Google Pay wallet instantly.
+Hackathon Parameters
+
+Time limit: 4 hours to working demo
+Sponsors: Replit + Stripe
+Goal: Production-ready demo that wins
+Assumption: We have Stripe Issuing account access
+
+Tech Stack
+Frontend:
+
+React (Vite)
+Tailwind CSS
+Stripe.js for checkout
+
+Backend:
+
+Node.js + Express
+Stripe API (for Issuing + Payments)
+Anthropic Claude API (for business analysis)
+QR code generation
+
+Storage:
+
+Simple in-memory Map or JSON file (no database needed for demo)
+Or use Replit's key-value store if easy
+
+APIs Needed:
+
+Stripe Secret Key (will be provided)
+Anthropic API Key (will be provided)
+
+Core Features to Build
+1. Landing Page
+
+Hero section explaining Giftly
+"Create a Gift" CTA button
+Clean, modern design
+
+2. Gift Creation Flow
+
+URL input for local business
+"Analyze" button that calls Claude API
+Claude analyzes the business webpage and extracts:
+
+Business name
+Business type (car wash, bakery, coffee shop, etc.)
+Brand colors
+Vibe/aesthetic
+What they sell/do
+
+
+Display beautiful gift card preview with branding
+Gift value selector ($25, $50, $100, custom)
+Personal message input (optional)
+Recipient name and phone number inputs
+"Purchase & Send" button
+
+3. Payment Flow
+
+Stripe Checkout integration
+After successful payment, create Stripe Issuing virtual card
+Generate unique gift link (giftly.app/gift/[unique-id])
+Show QR code for easy mobile access
+Show success message with shareable link
+
+4. Gift View Page (Recipient Experience)
+
+Display beautiful branded gift card
+Show gift amount and personal message
+Show recipient name
+Detect device (iOS vs Android)
+Show "Add to Apple Pay" or "Add to Google Pay" button
+Handle wallet provisioning via Stripe API
+Confetti animation on successful add
+Show card details (number, expiry, CVV) as fallback
+
+5. Backend API Endpoints
+POST /api/analyze-business
+- Body: { url: string }
+- Fetches business webpage
+- Sends to Claude for analysis
+- Returns: { businessName, type, colors, vibe, description }
+
+POST /api/create-checkout
+- Body: { amount, recipientName, recipientPhone, recipientEmail, message, businessInfo }
+- Creates Stripe Checkout session
+- Returns: { sessionId, checkoutUrl }
+
+POST /api/webhook
+- Handles Stripe webhook for successful payment
+- Creates Stripe Issuing cardholder
+- Creates Stripe Issuing virtual card with spending limit
+- Stores gift details with unique ID
+- Returns success
+
+GET /api/gift/:giftId
+- Returns gift details including card info
+
+POST /api/provision-wallet
+- Body: { cardId, walletType: 'apple_pay' | 'google_pay' }
+- Calls Stripe Issuing API to provision card to wallet
+- Returns provisioning data
+What to Simplify/Skip for Demo
+Skip:
+
+User authentication/login
+Database (use in-memory storage)
+Email notifications
+SMS (use QR code + shareable link instead)
+Gift history/tracking
+Real web scraping (just fetch URL and extract what you can)
+
+Simplify:
+
+Card design: Use Claude to suggest colors/theme, render with React + Tailwind
+No image generation: Use emoji/icons + gradient backgrounds
+Manual card details reveal: Show card number, CVV, expiry if wallet provisioning has issues
+
+Demo Flow (Car Wash Example)
+The Setup:
+"I'm headed to lunch with my friend Jake for his birthday. He's obsessed with this local car wash called Sparkle Auto Spa - always gets his BMW X5 detailed there before special occasions. They don't sell gift cards, and I want to send him something before lunch starts in an hour."
+The Demo:
+
+Open giftly.app on laptop
+Click "Create a Gift"
+Paste car wash URL: https://sparkleautospa.com
+Click "Analyze with AI"
+Claude analyzes page (show loading)
+Beautiful gift card generates with car wash branding (blues, clean design, car emoji)
+Set value to $75
+Add message: "Happy Birthday! Get the X5 detailed before lunch 🚗"
+Enter Jake's name and phone: +1-555-0123
+Click "Purchase & Send"
+Pay with Stripe ($75)
+Success! Shows shareable link + QR code
+Pull out demo phone, scan QR code
+Phone opens gift page with branded card
+Shows message and $75 value
+Tap "Add to Apple Pay"
+Apple Wallet opens, card slides in
+Confetti animation!
+Open Wallet app - show real Stripe card with $75
+"Now Jake has a real Visa in his wallet. He can use it at Sparkle Auto Spa... or anywhere. But the personal touch means he'll probably use it where I intended."
+
+Technical Requirements
+Claude Integration:
+
+Prompt Claude to analyze business webpage
+Extract structured data (JSON response)
+Use Claude's vision if webpage has images
+Fallback to business name extraction if analysis fails
+
+Stripe Issuing:
+javascript// Create cardholder
+const cardholder = await stripe.issuing.cardholders.create({
+  name: recipientName,
+  email: recipientEmail,
+  phone_number: recipientPhone,
+  billing: { address: { line1: '123 Main St', city: 'Austin', state: 'TX', postal_code: '78701', country: 'US' } },
+  type: 'individual'
+});
+
+// Create virtual card with spending limit
+const card = await stripe.issuing.cards.create({
+  cardholder: cardholder.id,
+  currency: 'usd',
+  type: 'virtual',
+  status: 'active',
+  spending_controls: {
+    spending_limits: [{ amount: giftAmount * 100, interval: 'all_time' }]
+  }
+});
+
+// Provision to Apple Pay
+const provisionData = await stripe.issuing.cards.deliverCard(card.id, {
+  type: 'digital_wallet',
+  digital_wallet: { type: 'apple_pay' }
+});
+```
+
+**Gift Card Design:**
+- Use Tailwind gradients for backgrounds
+- Business name in large font
+- Gift amount prominently displayed
+- Personal message in script/elegant font
+- Car emoji or relevant icon
+- Responsive design (looks good on mobile)
+
+## Success Criteria
+
+✅ Can paste any business URL and get analysis
+✅ Gift card looks beautiful and branded
+✅ Real Stripe payment works
+✅ Real Stripe Issuing card created
+✅ Shareable link works on mobile
+✅ "Add to Apple Pay" actually provisions card
+✅ Entire flow takes under 60 seconds
+✅ Demo runs smoothly without crashes
+
+## File Structure
+```
+/client (React frontend)
+  /src
+    /components
+      - LandingPage.jsx
+      - GiftCreator.jsx
+      - GiftCard.jsx
+      - GiftView.jsx
+    - App.jsx
+    - main.jsx
+
+/server (Express backend)
+  - index.js
+  - stripe.js
+  - claude.js
+  - storage.js (simple in-memory store)
+
+/shared
+  - types.js (shared types/constants)
+```
+
+## Environment Variables Needed
+```
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+ANTHROPIC_API_KEY=sk-ant-...
+PORT=3000
+Build Priority Order
+
+Hour 1: Basic React setup + routing + landing page + gift creator UI
+Hour 2: Claude API integration + gift card display component
+Hour 3: Stripe Checkout + Stripe Issuing card creation
+Hour 4: Gift view page + wallet provisioning + polish + QR codes
+
+The Pitch
+"Last-minute gifting sucks. Generic Amazon cards feel impersonal. Local businesses don't sell gift cards. I spent hours manually creating one gift card for a friend.
+Giftly makes this as easy as buying a Starbucks card - but for ANY local business. Paste a URL, AI creates a beautiful branded card, real money loads via Stripe, and it goes straight to their phone's wallet.
+Built in 4 hours on Replit. Powered by Stripe Issuing and Claude AI. Ready to ship."
+
+Build this app. Focus on making the demo flow work perfectly. Prioritize the "wow" moment of the card sliding into Apple Pay. Make it beautiful. Make it fast. Make it win.
