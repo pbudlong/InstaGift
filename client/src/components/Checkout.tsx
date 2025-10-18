@@ -101,7 +101,6 @@ export default function Checkout({ clientSecret, amount, businessName, onSuccess
     defaultValues: {
       billingDetails: {
         name: 'Demo User',
-        email: 'demo@example.com',
         address: {
           line1: '123 Main St',
           city: 'San Francisco',
@@ -116,6 +115,10 @@ export default function Checkout({ clientSecret, amount, businessName, onSuccess
         email: 'never',
         phone: 'never',
       },
+    },
+    wallets: {
+      applePay: 'never',
+      googlePay: 'never',
     },
   };
 

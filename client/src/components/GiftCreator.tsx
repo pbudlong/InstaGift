@@ -69,16 +69,23 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between mb-6">
-          <Logo />
-          <Button 
-            variant="ghost" 
-            onClick={onBack}
-            data-testid="button-back"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
-          </Button>
+        <div className="space-y-4 mb-6">
+          <div className="flex items-center justify-between">
+            <Logo />
+            <Button 
+              variant="ghost" 
+              onClick={onBack}
+              data-testid="button-back"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Home
+            </Button>
+          </div>
+          <div className="bg-muted/50 rounded-lg p-3 border-l-4 border-primary">
+            <p className="text-sm text-muted-foreground">
+              <strong className="text-foreground">Demo Note:</strong> All fields are prefilled for demo purposes but can be changed to create your own gift card
+            </p>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">

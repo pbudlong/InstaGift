@@ -169,7 +169,7 @@ export default function GiftView({ gift }: GiftViewProps) {
                 </div>
 
                 <div className="bg-muted/50 rounded-lg p-4 border-l-4 border-primary">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-base text-muted-foreground">
                     <strong className="text-foreground">How it works:</strong> This is not an actual gift card at {gift.businessName}. 
                     You now have <strong className="text-foreground">${gift.amount} in your wallet</strong> that you can use to buy your gift at {gift.businessName} — 
                     or if you choose, use the money anywhere you want! After all, it's the thought that counts 😊
@@ -180,81 +180,6 @@ export default function GiftView({ gift }: GiftViewProps) {
           </CardContent>
         </Card>
 
-        <Collapsible open={showCardDetails} onOpenChange={setShowCardDetails}>
-          <Card>
-            <CollapsibleTrigger className="w-full" data-testid="button-toggle-card-details">
-              <CardHeader className="cursor-pointer hover-elevate">
-                <CardTitle className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <CreditCard className="w-5 h-5" />
-                    Card Details
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    {showCardDetails ? 'Hide' : 'Show'}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="space-y-4">
-                <div className="grid gap-4">
-                  <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                    <div>
-                      <div className="text-xs text-muted-foreground mb-1">Card Number</div>
-                      <div className="font-mono font-semibold" data-testid="text-card-number">
-                        {gift.cardNumber || '4242 4242 4242 4242'}
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => copyCardDetail(gift.cardNumber || '4242424242424242', 'Card number')}
-                      data-testid="button-copy-card-number"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">Expiry</div>
-                        <div className="font-mono font-semibold" data-testid="text-card-expiry">
-                          {gift.cardExpiry || '12/28'}
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => copyCardDetail(gift.cardExpiry || '12/28', 'Expiry date')}
-                        data-testid="button-copy-expiry"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">CVV</div>
-                        <div className="font-mono font-semibold" data-testid="text-card-cvv">
-                          {gift.cardCvv || '123'}
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => copyCardDetail(gift.cardCvv || '123', 'CVV')}
-                        data-testid="button-copy-cvv"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </CollapsibleContent>
-          </Card>
-        </Collapsible>
       </div>
     </div>
   );
