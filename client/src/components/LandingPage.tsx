@@ -40,8 +40,7 @@ export default function LandingPage({ onCreateGift }: LandingPageProps) {
           </h1>
           
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Paste a URL. AI creates a beautiful branded card. Real money via Stripe. 
-            Instant delivery to Apple Pay & Google Pay.
+            Real Stripe money delivered instantly to your recipient's mobile wallet
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
