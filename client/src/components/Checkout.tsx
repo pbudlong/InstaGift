@@ -3,8 +3,7 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, ArrowLeft, CreditCard } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Loader2, ArrowLeft } from 'lucide-react';
 import Logo from './Logo';
 
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
@@ -94,8 +93,6 @@ interface CheckoutProps {
 }
 
 export default function Checkout({ clientSecret, amount, businessName, onSuccess, onBack }: CheckoutProps) {
-  const { toast } = useToast();
-  
   const elementsOptions = {
     clientSecret,
     appearance: {
@@ -115,14 +112,6 @@ export default function Checkout({ clientSecret, amount, businessName, onSuccess
         },
       },
     },
-  };
-
-  const handleUseTestCard = () => {
-    navigator.clipboard.writeText('4242424242424242');
-    toast({
-      title: "Test card copied!",
-      description: "Paste 4242 4242 4242 4242 into the card field. Other fields are pre-filled.",
-    });
   };
 
   return (
@@ -146,27 +135,6 @@ export default function Checkout({ clientSecret, amount, businessName, onSuccess
             <p className="text-muted-foreground">
               You're creating a ${amount} gift card for {businessName}
             </p>
-            <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <p className="font-semibold mb-2 flex items-center gap-2">
-                    <CreditCard className="w-4 h-4" />
-                    Demo Test Card
-                  </p>
-                  <div className="text-sm space-y-1 text-muted-foreground font-mono">
-                    <p>Card: 4242 4242 4242 4242</p>
-                    <p>Exp: 12/28 • CVV: 123 • ZIP: 94111</p>
-                  </div>
-                </div>
-                <Button 
-                  onClick={handleUseTestCard}
-                  size="sm"
-                  data-testid="button-use-test-card"
-                >
-                  Copy Card Number
-                </Button>
-              </div>
-            </div>
           </CardHeader>
           <CardContent>
             <Elements stripe={stripePromise} options={elementsOptions}>
