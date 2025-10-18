@@ -77,7 +77,7 @@ function CheckoutForm({ onSuccess, amount }: CheckoutFormProps) {
             Processing...
           </>
         ) : (
-          `Pay $${amount}`
+          `Purchase & Finish Setting Up Gift Card`
         )}
       </Button>
     </form>
@@ -102,7 +102,6 @@ export default function Checkout({ clientSecret, amount, businessName, onSuccess
       billingDetails: {
         name: 'Demo User',
         email: 'demo@example.com',
-        phone: '+1 (555) 555-5555',
         address: {
           line1: '123 Main St',
           city: 'San Francisco',
@@ -110,6 +109,12 @@ export default function Checkout({ clientSecret, amount, businessName, onSuccess
           postal_code: '94111',
           country: 'US',
         },
+      },
+    },
+    fields: {
+      billingDetails: {
+        email: 'never',
+        phone: 'never',
       },
     },
   };
@@ -132,7 +137,7 @@ export default function Checkout({ clientSecret, amount, businessName, onSuccess
         <Card className="mb-4 bg-muted/50">
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground text-center">
-              <strong>Test Card:</strong> 4242 4242 4242 4242 • Any future expiry • Any CVC
+              <strong>Test Card:</strong> 4242 4242 4242 4242 • Any future expiry • Any CVC • Any zip
             </p>
           </CardContent>
         </Card>

@@ -122,18 +122,57 @@ export default function GiftView({ gift }: GiftViewProps) {
                 </p>
               </div>
             ) : (
-              <div className="text-center space-y-4">
-                <div className="flex justify-center">
-                  <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                    <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
+              <div className="space-y-6">
+                <div className="text-center space-y-4">
+                  <div className="flex justify-center">
+                    <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                      <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-semibold mb-2">
+                      Added to Wallet! ✓
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Your gift card is now available in your {device === 'ios' ? 'Apple' : device === 'android' ? 'Google' : 'mobile'} wallet
+                    </p>
                   </div>
                 </div>
-                <div>
-                  <h3 className="text-2xl font-semibold mb-2">
-                    Added to Wallet! ✓
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Your gift card is now available in your {device === 'ios' ? 'Apple' : device === 'android' ? 'Google' : 'mobile'} wallet
+
+                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white shadow-xl">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="text-sm opacity-80">{device === 'ios' ? 'Apple Pay' : device === 'android' ? 'Google Pay' : 'Wallet'}</div>
+                    <CreditCard className="w-6 h-6 opacity-60" />
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-xs opacity-60 mb-1">CARD NUMBER</div>
+                      <div className="font-mono text-lg tracking-wider">
+                        {gift.cardNumber || '4571 •••• •••• 4242'}
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <div className="text-xs opacity-60 mb-1">CARDHOLDER</div>
+                        <div className="font-medium">{gift.recipientName}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs opacity-60 mb-1">EXPIRES</div>
+                        <div className="font-mono">{gift.cardExpiry || '12/28'}</div>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t border-white/10">
+                      <div className="text-sm opacity-80">Gift Balance</div>
+                      <div className="text-3xl font-bold">${gift.amount}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-muted/50 rounded-lg p-4 border-l-4 border-primary">
+                  <p className="text-sm text-muted-foreground">
+                    <strong className="text-foreground">How it works:</strong> This is not an actual gift card at {gift.businessName}. 
+                    You now have <strong className="text-foreground">${gift.amount} in your wallet</strong> that you can use to buy your gift at {gift.businessName} — 
+                    or if you choose, use the money anywhere you want! After all, it's the thought that counts 😊
                   </p>
                 </div>
               </div>
