@@ -1,10 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle2, Copy, Home } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { CheckCircle2, Copy, Home, MessageSquare, Eye, Share2, Send, Loader2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'wouter';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 interface PaymentSuccessProps {
   giftId: string;
@@ -14,9 +23,10 @@ interface PaymentSuccessProps {
 
 export default function PaymentSuccess({ giftId, giftUrl, onHome }: PaymentSuccessProps) {
   const { toast } = useToast();
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    // Trigger confetti on mount
     const duration = 3000;
     const end = Date.now() + duration;
 
@@ -51,59 +61,181 @@ export default function PaymentSuccess({ giftId, giftUrl, onHome }: PaymentSucce
     });
   };
 
+  const handleSendSMS = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!phoneNumber) {
+      toast({
+        title: "Phone number required",
+        description: "Please enter a phone number to send the gift",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSending(true);
+    
+    try {
+      const response = await fetch('/api/send-gift-sms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          phoneNumber,
+          giftId,
+          giftUrl 
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send SMS');
+      }
+
+      toast({
+        title: "Gift sent! 🎉",
+        description: `Your gift has been sent to ${phoneNumber}`,
+      });
+      
+      setPhoneNumber('');
+    } catch (error) {
+      console.error('SMS error:', error);
+      toast({
+        title: "Failed to send",
+        description: "There was an error sending the SMS. Please try sharing the link instead.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <Card className="max-w-2xl w-full">
-        <CardContent className="p-12 text-center space-y-8">
-          <div className="flex justify-center">
-            <CheckCircle2 className="w-20 h-20 text-green-500" />
-          </div>
-          
-          <div>
-            <h1 className="text-4xl font-bold mb-3 font-display" data-testid="text-success-title">
-              Gift Created! 🎉
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Your personalized gift card has been created and is ready to share
-            </p>
-          </div>
-
-          <div className="bg-muted/50 rounded-lg p-8 space-y-4">
+        <CardContent className="p-8 md:p-12 space-y-8">
+          <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <div className="bg-white p-4 rounded-lg">
-                <QRCodeSVG 
-                  value={giftUrl} 
-                  size={200}
-                  level="H"
-                  data-testid="qr-code"
-                />
-              </div>
+              <CheckCircle2 className="w-20 h-20 text-green-500" />
             </div>
-            <p className="text-sm text-muted-foreground">
-              Scan with phone camera to open gift
-            </p>
-          </div>
+            
+            <div>
+              <h1 className="text-4xl font-bold mb-3 font-display" data-testid="text-success-title">
+                Gift Created! 🎉
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                Your personalized gift card is ready to send
+              </p>
+            </div>
 
-          <div className="space-y-3">
-            <Label className="text-sm font-medium">Shareable Link</Label>
-            <div className="flex gap-2">
-              <Input
-                value={giftUrl}
-                readOnly
-                className="font-mono text-sm"
-                data-testid="input-gift-url"
-              />
-              <Button 
-                variant="outline"
-                onClick={copyToClipboard}
-                data-testid="button-copy-link"
-              >
-                <Copy className="w-4 h-4" />
+            <Link href={`/gift/${giftId}`}>
+              <Button variant="outline" size="sm" data-testid="button-preview-gift">
+                <Eye className="w-4 h-4 mr-2" />
+                Preview Gift Card
               </Button>
-            </div>
+            </Link>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+          <Tabs defaultValue="sms" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="sms" data-testid="tab-sms">
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Send via Text
+              </TabsTrigger>
+              <TabsTrigger value="link" data-testid="tab-link">
+                <Share2 className="w-4 h-4 mr-2" />
+                Share Link
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="sms" className="space-y-4 pt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Send Gift via Text Message</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    We'll send a beautiful message with the gift card link
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSendSMS} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Recipient's Phone Number</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="+1 (555) 123-4567"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        data-testid="input-phone-number"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Include country code (e.g., +1 for US)
+                      </p>
+                    </div>
+
+                    <Button 
+                      type="submit" 
+                      className="w-full" 
+                      size="lg"
+                      disabled={isSending || !phoneNumber}
+                      data-testid="button-send-sms"
+                    >
+                      {isSending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Gift via Text
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="link" className="space-y-4 pt-4">
+              <div className="space-y-6">
+                <div className="bg-muted/50 rounded-lg p-6 space-y-4">
+                  <div className="flex justify-center">
+                    <div className="bg-white p-4 rounded-lg">
+                      <QRCodeSVG 
+                        value={giftUrl} 
+                        size={180}
+                        level="H"
+                        data-testid="qr-code"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground text-center">
+                    Scan with phone camera to open gift
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Shareable Link</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={giftUrl}
+                      readOnly
+                      className="font-mono text-sm"
+                      data-testid="input-gift-url"
+                    />
+                    <Button 
+                      variant="outline"
+                      onClick={copyToClipboard}
+                      data-testid="button-copy-link"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4 border-t">
             <Button 
               size="lg"
               onClick={onHome}
@@ -124,21 +256,5 @@ export default function PaymentSuccess({ giftId, giftUrl, onHome }: PaymentSucce
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-function Label({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={className}>{children}</div>;
-}
-
-function Input({ value, readOnly, className, 'data-testid': testId }: any) {
-  return (
-    <input 
-      type="text" 
-      value={value} 
-      readOnly={readOnly} 
-      className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors ${className}`}
-      data-testid={testId}
-    />
   );
 }
