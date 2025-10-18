@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Smartphone, CreditCard, Copy, Check } from 'lucide-react';
+import { Smartphone, CreditCard, Copy, Check, Code } from 'lucide-react';
 import GiftCard from './GiftCard';
 import Logo from './Logo';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
+import { useLocation } from 'wouter';
 import {
   Collapsible,
   CollapsibleContent,
@@ -32,6 +33,7 @@ export default function GiftView({ gift }: GiftViewProps) {
   const [device, setDevice] = useState<'ios' | 'android' | 'desktop'>('desktop');
   const [showCardDetails, setShowCardDetails] = useState(false);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     const userAgent = navigator.userAgent;
@@ -179,6 +181,19 @@ export default function GiftView({ gift }: GiftViewProps) {
             )}
           </CardContent>
         </Card>
+
+        <div className="text-center">
+          <Button
+            size="lg"
+            variant="outline"
+            onClick={() => setLocation('/tech')}
+            data-testid="button-view-tech"
+            className="px-8"
+          >
+            <Code className="w-5 h-5 mr-2" />
+            View Tech Stack
+          </Button>
+        </div>
 
       </div>
     </div>
