@@ -226,7 +226,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                   className="w-full"
                   data-testid="button-purchase"
                 >
-                  Purchase & Send Gift
+                  Purchase & Finish Setting Up Gift Card
                 </Button>
               </>
             )}
