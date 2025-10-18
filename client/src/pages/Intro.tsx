@@ -39,38 +39,38 @@ export default function Intro() {
             </p>
             
             <div className="flex flex-wrap items-center justify-center gap-4 py-4">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Link className="w-5 h-5 text-primary" />
+              <div className="flex flex-col items-center gap-2 max-w-[140px]">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Link className="w-6 h-6 text-primary" />
                 </div>
-                <span className="text-sm font-medium">URL</span>
+                <p className="text-sm font-medium text-center leading-tight">Paste a URL</p>
               </div>
 
-              <ArrowRight className="w-6 h-6 text-primary" />
+              <ArrowRight className="w-6 h-6 text-primary shrink-0" />
 
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-primary" />
+              <div className="flex flex-col items-center gap-2 max-w-[140px]">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-primary" />
                 </div>
-                <span className="text-sm font-medium">AI Card</span>
+                <p className="text-sm font-medium text-center leading-tight">AI creates a beautiful branded card</p>
               </div>
 
-              <ArrowRight className="w-6 h-6 text-primary" />
+              <ArrowRight className="w-6 h-6 text-primary shrink-0" />
 
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <CreditCard className="w-5 h-5 text-primary" />
+              <div className="flex flex-col items-center gap-2 max-w-[140px]">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <CreditCard className="w-6 h-6 text-primary" />
                 </div>
-                <span className="text-sm font-medium">Stripe</span>
+                <p className="text-sm font-medium text-center leading-tight">Real money loads via Stripe</p>
               </div>
 
-              <ArrowRight className="w-6 h-6 text-primary" />
+              <ArrowRight className="w-6 h-6 text-primary shrink-0" />
 
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Smartphone className="w-5 h-5 text-primary" />
+              <div className="flex flex-col items-center gap-2 max-w-[140px]">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Smartphone className="w-6 h-6 text-primary" />
                 </div>
-                <span className="text-sm font-medium">Wallet</span>
+                <p className="text-sm font-medium text-center leading-tight">Goes straight to their phone's wallet</p>
               </div>
             </div>
 
