@@ -3,11 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CheckCircle2, Copy, Home, MessageSquare, Eye, Share2, Send, Loader2, ExternalLink } from 'lucide-react';
+import { CheckCircle2, Copy, Home, MessageSquare, Eye, Share2, Send, Loader2, ExternalLink, Code } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
 import type { Gift } from '@shared/schema';
 import GiftCard from './GiftCard';
 import {
@@ -32,6 +33,7 @@ interface PaymentSuccessProps {
 
 export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome }: PaymentSuccessProps) {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [phoneNumber, setPhoneNumber] = useState(recipientPhone || '');
   const [isSending, setIsSending] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -286,6 +288,15 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
               data-testid="button-create-another"
             >
               Create Another Gift
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              onClick={() => setLocation('/tech')}
+              data-testid="button-view-tech"
+            >
+              <Code className="w-4 h-4 mr-2" />
+              View Tech Stack
             </Button>
             <Button 
               size="lg"

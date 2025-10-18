@@ -3,17 +3,23 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import Intro from "@/pages/Intro";
+import DemoGuide from "@/pages/DemoGuide";
 import Home from "@/pages/Home";
 import Create from "@/pages/Create";
 import Gift from "@/pages/Gift";
+import Tech from "@/pages/Tech";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
+      <Route path="/intro" component={Intro} />
+      <Route path="/demo-guide" component={DemoGuide} />
       <Route path="/" component={Home} />
       <Route path="/create" component={Create} />
       <Route path="/gift/:id" component={Gift} />
+      <Route path="/tech" component={Tech} />
       <Route component={NotFound} />
     </Switch>
   );
