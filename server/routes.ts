@@ -55,43 +55,43 @@ Return ONLY the JSON object, no other text.`;
       let responseText = '';
       
       try {
-        if (anthropic) {
-          console.log("Trying Anthropic Claude for business analysis...");
-          const message = await anthropic.messages.create({
-            model: "claude-3-5-sonnet-20240620",
-            max_tokens: 1024,
+        if (openai) {
+          console.log("Using OpenAI for business analysis...");
+          const completion = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
             messages: [{
               role: "user",
               content: prompt
-            }]
+            }],
+            max_tokens: 1024,
           });
-
-          responseText = message.content[0].type === 'text' 
-            ? message.content[0].text 
-            : '';
-          console.log("Anthropic analysis successful");
+          
+          responseText = completion.choices[0]?.message?.content || '';
+          console.log("OpenAI analysis successful");
         } else {
-          throw new Error("Anthropic not available");
+          throw new Error("OpenAI not available");
         }
-      } catch (anthropicError: any) {
-        console.error("Anthropic failed:", anthropicError.message);
+      } catch (openaiError: any) {
+        console.error("OpenAI failed:", openaiError.message);
         
-        if (!openai) {
-          throw new Error("Both Anthropic and OpenAI are unavailable");
+        if (!anthropic) {
+          throw new Error("Both OpenAI and Anthropic are unavailable");
         }
         
-        console.log("Falling back to OpenAI...");
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
+        console.log("Falling back to Anthropic...");
+        const message = await anthropic.messages.create({
+          model: "claude-3-5-sonnet-20240620",
+          max_tokens: 1024,
           messages: [{
             role: "user",
             content: prompt
-          }],
-          max_tokens: 1024,
+          }]
         });
-        
-        responseText = completion.choices[0]?.message?.content || '';
-        console.log("OpenAI analysis successful");
+
+        responseText = message.content[0].type === 'text' 
+          ? message.content[0].text 
+          : '';
+        console.log("Anthropic analysis successful");
       }
       
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
