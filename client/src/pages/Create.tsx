@@ -76,6 +76,7 @@ export default function Create() {
       <PaymentSuccess 
         giftId={giftId}
         giftUrl={`${window.location.origin}/gift/${giftId}`}
+        recipientPhone={giftData?.recipientPhone}
         onHome={() => {
           setStage('create');
           setGiftData(null);

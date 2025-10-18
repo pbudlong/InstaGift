@@ -3,28 +3,43 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CheckCircle2, Copy, Home, MessageSquare, Eye, Share2, Send, Loader2 } from 'lucide-react';
+import { CheckCircle2, Copy, Home, MessageSquare, Eye, Share2, Send, Loader2, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
-import { Link } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
+import type { Gift } from '@shared/schema';
+import GiftView from './GiftView';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface PaymentSuccessProps {
   giftId: string;
   giftUrl: string;
+  recipientPhone?: string;
   onHome: () => void;
 }
 
-export default function PaymentSuccess({ giftId, giftUrl, onHome }: PaymentSuccessProps) {
+export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome }: PaymentSuccessProps) {
   const { toast } = useToast();
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(recipientPhone || '');
   const [isSending, setIsSending] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+
+  const { data: gift } = useQuery<Gift>({
+    queryKey: ['/api/gifts', giftId],
+    enabled: showPreview,
+  });
 
   useEffect(() => {
     const duration = 3000;
@@ -126,12 +141,15 @@ export default function PaymentSuccess({ giftId, giftUrl, onHome }: PaymentSucce
               </p>
             </div>
 
-            <Link href={`/gift/${giftId}`}>
-              <Button variant="outline" size="sm" data-testid="button-preview-gift">
-                <Eye className="w-4 h-4 mr-2" />
-                Preview Gift Card
-              </Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowPreview(true)}
+              data-testid="button-preview-gift"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Preview Gift Card
+            </Button>
           </div>
 
           <Tabs defaultValue="sms" className="w-full">
@@ -255,6 +273,30 @@ export default function PaymentSuccess({ giftId, giftUrl, onHome }: PaymentSucce
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Gift Card Preview</DialogTitle>
+          </DialogHeader>
+          {gift && (
+            <GiftView 
+              gift={{
+                id: gift.id,
+                businessName: gift.businessName,
+                amount: gift.amount,
+                emoji: gift.emoji || '🎁',
+                brandColors: gift.brandColors || ['#a855f7', '#ec4899'],
+                message: gift.message || undefined,
+                recipientName: gift.recipientName,
+                cardNumber: gift.cardNumber || undefined,
+                cardExpiry: gift.cardExpiry || undefined,
+                cardCvv: gift.cardCvv || undefined,
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
