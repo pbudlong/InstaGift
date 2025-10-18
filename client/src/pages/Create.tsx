@@ -81,7 +81,7 @@ export default function Create() {
           setStage('create');
           setGiftData(null);
           setGiftId('');
-          setLocation('/');
+          setLocation('/home');
         }}
       />
     );
@@ -101,7 +101,7 @@ export default function Create() {
 
   return (
     <GiftCreator 
-      onBack={() => setLocation('/')}
+      onBack={() => setLocation('/home')}
       onCheckout={handleCheckout}
     />
   );

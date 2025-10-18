@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, SkipForward } from 'lucide-react';
 import { useLocation } from 'wouter';
 import Logo from '@/components/Logo';
 
@@ -47,7 +47,7 @@ export default function Intro() {
           </div>
         </div>
 
-        <div className="pt-8">
+        <div className="pt-8 space-y-4">
           <Button 
             size="lg" 
             className="text-lg px-8 py-6"
@@ -57,6 +57,16 @@ export default function Intro() {
             See How It Works
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
+          <div>
+            <Button 
+              variant="ghost"
+              onClick={() => setLocation('/home')}
+              data-testid="button-skip"
+            >
+              <SkipForward className="w-4 h-4 mr-2" />
+              Skip to Demo
+            </Button>
+          </div>
         </div>
       </div>
     </div>

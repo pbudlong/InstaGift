@@ -51,7 +51,7 @@ export default function Tech() {
           <Logo />
           <Button 
             variant="ghost" 
-            onClick={() => setLocation('/')}
+            onClick={() => setLocation('/home')}
             data-testid="button-home"
           >
             <Home className="w-4 h-4 mr-2" />

@@ -34,14 +34,16 @@ export default function DemoGuide() {
     <div className="min-h-screen bg-background py-12 px-6">
       <div className="max-w-5xl mx-auto space-y-12">
         <div className="flex items-center justify-between">
-          <Button 
-            variant="ghost" 
-            onClick={() => setLocation('/intro')}
-            data-testid="button-back"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
+          <div>
+            <Button 
+              variant="ghost" 
+              onClick={() => setLocation('/')}
+              data-testid="button-back"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+          </div>
           <Logo />
         </div>
 
@@ -106,7 +108,7 @@ export default function DemoGuide() {
           <Button 
             size="lg" 
             className="text-lg px-8 py-6"
-            onClick={() => setLocation('/')}
+            onClick={() => setLocation('/home')}
             data-testid="button-start-demo"
           >
             Start Demo
