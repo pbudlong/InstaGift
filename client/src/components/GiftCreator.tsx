@@ -15,17 +15,17 @@ interface GiftCreatorProps {
 }
 
 export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState('https://sparkleautospa.com');
   const [analyzing, setAnalyzing] = useState(false);
   const [businessData, setBusinessData] = useState<BusinessAnalysis | null>(null);
   
   // Gift customization
-  const [amount, setAmount] = useState<number | null>(null);
+  const [amount, setAmount] = useState<number | null>(75);
   const [customAmount, setCustomAmount] = useState('');
-  const [message, setMessage] = useState('');
-  const [recipientName, setRecipientName] = useState('');
-  const [recipientEmail, setRecipientEmail] = useState('');
-  const [recipientPhone, setRecipientPhone] = useState('');
+  const [message, setMessage] = useState('Happy Birthday! Get the X5 detailed before lunch 🚗');
+  const [recipientName, setRecipientName] = useState('Jake Smith');
+  const [recipientEmail, setRecipientEmail] = useState('jake@example.com');
+  const [recipientPhone, setRecipientPhone] = useState('+1 (555) 123-4567');
 
   const presetAmounts = [50, 75, 100];
 
