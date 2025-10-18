@@ -38,48 +38,39 @@ export default function Intro() {
               InstaGift makes this as easy as buying a Starbucks card - but for <span className="text-primary">ANY</span> local business.
             </p>
             
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 py-4">
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Link className="w-8 h-8 text-primary" />
+            <div className="flex flex-wrap items-center justify-center gap-4 py-4">
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Link className="w-5 h-5 text-primary" />
                 </div>
-                <p className="text-base font-medium">Paste a URL</p>
-                <ArrowDown className="w-6 h-6 text-primary md:hidden" />
+                <span className="text-sm font-medium">URL</span>
               </div>
 
-              <div className="hidden md:flex items-center justify-center">
-                <ArrowRight className="w-8 h-8 text-primary" />
-              </div>
+              <ArrowRight className="w-6 h-6 text-primary" />
 
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="w-8 h-8 text-primary" />
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-primary" />
                 </div>
-                <p className="text-base font-medium">AI creates a beautiful branded card</p>
-                <ArrowDown className="w-6 h-6 text-primary md:hidden" />
+                <span className="text-sm font-medium">AI Card</span>
               </div>
 
-              <div className="hidden md:flex items-center justify-center">
-                <ArrowRight className="w-8 h-8 text-primary" />
-              </div>
+              <ArrowRight className="w-6 h-6 text-primary" />
 
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <CreditCard className="w-8 h-8 text-primary" />
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <CreditCard className="w-5 h-5 text-primary" />
                 </div>
-                <p className="text-base font-medium">Real money loads via Stripe</p>
-                <ArrowDown className="w-6 h-6 text-primary md:hidden" />
+                <span className="text-sm font-medium">Stripe</span>
               </div>
 
-              <div className="hidden md:flex items-center justify-center">
-                <ArrowRight className="w-8 h-8 text-primary" />
-              </div>
+              <ArrowRight className="w-6 h-6 text-primary" />
 
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Smartphone className="w-8 h-8 text-primary" />
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Smartphone className="w-5 h-5 text-primary" />
                 </div>
-                <p className="text-base font-medium">Goes straight to their phone's wallet</p>
+                <span className="text-sm font-medium">Wallet</span>
               </div>
             </div>
 
