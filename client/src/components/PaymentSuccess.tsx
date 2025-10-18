@@ -35,6 +35,7 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
   const [phoneNumber, setPhoneNumber] = useState(recipientPhone || '');
   const [isSending, setIsSending] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showRecipientView, setShowRecipientView] = useState(false);
 
   const { data: gift } = useQuery<Gift>({
     queryKey: ['/api/gifts', giftId],
@@ -74,6 +75,7 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
       title: "Link copied!",
       description: "Gift link has been copied to clipboard",
     });
+    setShowRecipientView(true);
   };
 
   const handleSendSMS = async (e: React.FormEvent) => {
@@ -111,6 +113,7 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
       });
       
       setPhoneNumber('');
+      setShowRecipientView(true);
     } catch (error) {
       console.error('SMS error:', error);
       toast({
@@ -253,21 +256,28 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
             </TabsContent>
           </Tabs>
 
-          <div className="pt-6">
-            <Button 
-              size="lg"
-              variant="default"
-              className="w-full"
-              onClick={() => window.open(`/gift/${giftId}`, '_blank')}
-              data-testid="button-open-recipient-view"
-            >
-              <ExternalLink className="w-5 h-5 mr-2" />
-              View Full Recipient Experience
-            </Button>
-            <p className="text-xs text-center text-muted-foreground mt-2">
-              Opens in new tab - see the gift card, wallet button, and confetti celebration
-            </p>
-          </div>
+          {showRecipientView && (
+            <Card className="mt-6 bg-primary/5 border-primary/20">
+              <CardContent className="p-6 space-y-4">
+                <div className="text-center space-y-2">
+                  <h3 className="text-lg font-semibold">Ready to Demo the Recipient Experience?</h3>
+                  <p className="text-sm text-muted-foreground">
+                    See how Jake will receive the gift card with the wallet button and celebration
+                  </p>
+                </div>
+                <Button 
+                  size="lg"
+                  variant="default"
+                  className="w-full"
+                  onClick={() => window.open(`/gift/${giftId}`, '_blank')}
+                  data-testid="button-open-recipient-view"
+                >
+                  <ExternalLink className="w-5 h-5 mr-2" />
+                  View Full Recipient Experience
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-6 border-t mt-6">
             <Button 
@@ -296,16 +306,27 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
             <DialogTitle>Gift Card Design Preview</DialogTitle>
           </DialogHeader>
           {gift && (
-            <div className="py-4">
-              <GiftCard
-                businessName={gift.businessName}
-                amount={gift.amount}
-                emoji={gift.emoji || '🎁'}
-                brandColors={gift.brandColors || ['#a855f7', '#ec4899']}
-                message={gift.message || undefined}
-                recipientName={gift.recipientName}
-                size="large"
-              />
+            <div className="space-y-4">
+              <div className="py-4">
+                <GiftCard
+                  businessName={gift.businessName}
+                  amount={gift.amount}
+                  emoji={gift.emoji || '🎁'}
+                  brandColors={gift.brandColors || ['#a855f7', '#ec4899']}
+                  message={gift.message || undefined}
+                  recipientName={gift.recipientName}
+                  size="large"
+                />
+              </div>
+              <div className="flex justify-center">
+                <Button 
+                  variant="outline" 
+                  onClick={onHome}
+                  data-testid="button-modify-gift"
+                >
+                  Modify Gift Details
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>

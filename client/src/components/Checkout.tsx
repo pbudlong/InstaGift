@@ -129,6 +129,14 @@ export default function Checkout({ clientSecret, amount, businessName, onSuccess
           </Button>
         </div>
 
+        <Card className="mb-4 bg-muted/50">
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground text-center">
+              <strong>Test Card:</strong> 4242 4242 4242 4242 • Any future expiry • Any CVC
+            </p>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Complete Your Purchase</CardTitle>
