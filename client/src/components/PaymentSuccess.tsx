@@ -3,13 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CheckCircle2, Copy, Home, MessageSquare, Eye, Share2, Send, Loader2, X } from 'lucide-react';
+import { CheckCircle2, Copy, Home, MessageSquare, Eye, Share2, Send, Loader2, ExternalLink } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
 import type { Gift } from '@shared/schema';
-import GiftView from './GiftView';
+import GiftCard from './GiftCard';
 import {
   Tabs,
   TabsContent,
@@ -141,25 +141,15 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
               </p>
             </div>
 
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowPreview(true)}
-                data-testid="button-preview-gift"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                Quick Preview
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => window.open(`/gift/${giftId}`, '_blank')}
-                data-testid="button-open-recipient-view"
-              >
-                Open Recipient View
-              </Button>
-            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowPreview(true)}
+              data-testid="button-preview-gift"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Preview Card Design
+            </Button>
           </div>
 
           <Tabs defaultValue="sms" className="w-full">
@@ -263,7 +253,23 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
             </TabsContent>
           </Tabs>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4 border-t">
+          <div className="pt-6">
+            <Button 
+              size="lg"
+              variant="default"
+              className="w-full"
+              onClick={() => window.open(`/gift/${giftId}`, '_blank')}
+              data-testid="button-open-recipient-view"
+            >
+              <ExternalLink className="w-5 h-5 mr-2" />
+              View Full Recipient Experience
+            </Button>
+            <p className="text-xs text-center text-muted-foreground mt-2">
+              Opens in new tab - see the gift card, wallet button, and confetti celebration
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-6 border-t mt-6">
             <Button 
               size="lg"
               onClick={onHome}
@@ -285,25 +291,22 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
       </Card>
 
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Gift Card Preview</DialogTitle>
+            <DialogTitle>Gift Card Design Preview</DialogTitle>
           </DialogHeader>
           {gift && (
-            <GiftView 
-              gift={{
-                id: gift.id,
-                businessName: gift.businessName,
-                amount: gift.amount,
-                emoji: gift.emoji || '🎁',
-                brandColors: gift.brandColors || ['#a855f7', '#ec4899'],
-                message: gift.message || undefined,
-                recipientName: gift.recipientName,
-                cardNumber: gift.cardNumber || undefined,
-                cardExpiry: gift.cardExpiry || undefined,
-                cardCvv: gift.cardCvv || undefined,
-              }}
-            />
+            <div className="py-4">
+              <GiftCard
+                businessName={gift.businessName}
+                amount={gift.amount}
+                emoji={gift.emoji || '🎁'}
+                brandColors={gift.brandColors || ['#a855f7', '#ec4899']}
+                message={gift.message || undefined}
+                recipientName={gift.recipientName}
+                size="large"
+              />
+            </div>
           )}
         </DialogContent>
       </Dialog>
