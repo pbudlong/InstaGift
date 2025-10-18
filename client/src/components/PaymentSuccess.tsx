@@ -141,15 +141,25 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
               </p>
             </div>
 
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowPreview(true)}
-              data-testid="button-preview-gift"
-            >
-              <Eye className="w-4 h-4 mr-2" />
-              Preview Gift Card
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowPreview(true)}
+                data-testid="button-preview-gift"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                Quick Preview
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => window.open(`/gift/${giftId}`, '_blank')}
+                data-testid="button-open-recipient-view"
+              >
+                Open Recipient View
+              </Button>
+            </div>
           </div>
 
           <Tabs defaultValue="sms" className="w-full">
