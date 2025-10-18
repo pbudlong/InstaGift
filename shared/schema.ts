@@ -29,6 +29,7 @@ export const gifts = pgTable("gifts", {
   recipientEmail: text("recipient_email"),
   recipientPhone: text("recipient_phone"),
   message: text("message"),
+  stripeCardholderId: text("stripe_cardholder_id"),
   stripeCardId: text("stripe_card_id"),
   cardNumber: text("card_number"),
   cardExpiry: text("card_expiry"),

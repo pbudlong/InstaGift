@@ -25,6 +25,67 @@ const openai = process.env.OPENAI_API_KEY ? new OpenAI({
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+async function createStripeIssuingCard(
+  recipientName: string,
+  recipientEmail: string | null,
+  recipientPhone: string | null,
+  amount: number
+): Promise<{
+  cardholderId: string;
+  cardId: string;
+  cardNumber: string;
+  cardExpiry: string;
+  cardCvv: string;
+}> {
+  try {
+    const cardholder = await stripe.issuing.cardholders.create({
+      type: 'individual',
+      name: recipientName,
+      email: recipientEmail || undefined,
+      phone_number: recipientPhone || undefined,
+      billing: {
+        address: {
+          line1: '123 Main St',
+          city: 'San Francisco',
+          state: 'CA',
+          postal_code: '94111',
+          country: 'US',
+        },
+      },
+    });
+
+    const card = await stripe.issuing.cards.create({
+      cardholder: cardholder.id,
+      currency: 'usd',
+      type: 'virtual',
+      status: 'active',
+      spending_controls: {
+        spending_limits: [
+          {
+            amount: amount * 100,
+            interval: 'all_time',
+          },
+        ],
+      },
+    });
+
+    const cardDetails = await stripe.issuing.cards.retrieve(card.id, {
+      expand: ['number', 'cvc'],
+    });
+
+    return {
+      cardholderId: cardholder.id,
+      cardId: card.id,
+      cardNumber: (cardDetails as any).number || '',
+      cardExpiry: `${cardDetails.exp_month.toString().padStart(2, '0')}/${cardDetails.exp_year}`,
+      cardCvv: (cardDetails as any).cvc || '',
+    };
+  } catch (error: any) {
+    console.error('Stripe Issuing error:', error);
+    throw new Error(`Failed to create Stripe Issuing card: ${error.message}`);
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/analyze-business", async (req, res) => {
@@ -140,17 +201,24 @@ Return ONLY the JSON object, no other text.`;
     try {
       const giftData = insertGiftSchema.parse(req.body);
       
-      const cardNumber = `4242 ${Math.floor(1000 + Math.random() * 9000)} ${Math.floor(1000 + Math.random() * 9000)} ${Math.floor(1000 + Math.random() * 9000)}`;
-      const cardExpiry = `12/${new Date().getFullYear() + 3}`;
-      const cardCvv = Math.floor(100 + Math.random() * 900).toString();
+      console.log('Creating Stripe Issuing card for gift...');
+      const issuingCard = await createStripeIssuingCard(
+        giftData.recipientName,
+        giftData.recipientEmail || null,
+        giftData.recipientPhone || null,
+        giftData.amount
+      );
       
       const gift = await storage.createGift({
         ...giftData,
-        cardNumber,
-        cardExpiry,
-        cardCvv,
+        stripeCardholderId: issuingCard.cardholderId,
+        stripeCardId: issuingCard.cardId,
+        cardNumber: issuingCard.cardNumber,
+        cardExpiry: issuingCard.cardExpiry,
+        cardCvv: issuingCard.cardCvv,
       });
 
+      console.log('Gift created with real Stripe Issuing card:', gift.id);
       res.json(gift);
     } catch (error: any) {
       console.error("Gift creation error:", error);
@@ -182,6 +250,30 @@ Return ONLY the JSON object, no other text.`;
       console.error("Gift retrieval error:", error);
       res.status(500).json({ 
         message: "Error retrieving gift: " + error.message 
+      });
+    }
+  });
+
+  app.post("/api/send-gift-sms", async (req, res) => {
+    try {
+      const { phoneNumber, giftId, giftUrl } = req.body;
+      
+      if (!phoneNumber || !giftId || !giftUrl) {
+        return res.status(400).json({ message: "Phone number, gift ID, and URL are required" });
+      }
+
+      console.log(`[DEMO] Would send SMS to ${phoneNumber} with gift URL: ${giftUrl}`);
+      
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      res.json({ 
+        success: true, 
+        message: "SMS sent successfully (demo mode)" 
+      });
+    } catch (error: any) {
+      console.error("SMS error:", error);
+      res.status(500).json({ 
+        message: "Error sending SMS: " + error.message 
       });
     }
   });

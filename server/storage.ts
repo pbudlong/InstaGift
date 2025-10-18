@@ -49,6 +49,7 @@ export class MemStorage implements IStorage {
       recipientEmail: insertGift.recipientEmail || null,
       recipientPhone: insertGift.recipientPhone || null,
       message: insertGift.message || null,
+      stripeCardholderId: insertGift.stripeCardholderId || null,
       stripeCardId: insertGift.stripeCardId || null,
       cardNumber: insertGift.cardNumber || null,
       cardExpiry: insertGift.cardExpiry || null,
