@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, SkipForward } from 'lucide-react';
+import { ArrowRight, SkipForward, Link, Sparkles, CreditCard, Smartphone, ArrowDown } from 'lucide-react';
 import { useLocation } from 'wouter';
 import Logo from '@/components/Logo';
 
@@ -38,24 +38,50 @@ export default function Intro() {
               InstaGift makes this as easy as buying a Starbucks card - but for <span className="text-primary">ANY</span> local business.
             </p>
             
-            <ul className="space-y-4 text-left">
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Paste a URL</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>AI creates a beautiful branded card</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Real money loads via Stripe</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary mt-1">•</span>
-                <span>Goes straight to their phone's wallet</span>
-              </li>
-            </ul>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 py-4">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Link className="w-8 h-8 text-primary" />
+                </div>
+                <p className="text-base font-medium">Paste a URL</p>
+                <ArrowDown className="w-6 h-6 text-primary md:hidden" />
+              </div>
+
+              <div className="hidden md:flex items-center justify-center">
+                <ArrowRight className="w-8 h-8 text-primary" />
+              </div>
+
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="w-8 h-8 text-primary" />
+                </div>
+                <p className="text-base font-medium">AI creates a beautiful branded card</p>
+                <ArrowDown className="w-6 h-6 text-primary md:hidden" />
+              </div>
+
+              <div className="hidden md:flex items-center justify-center">
+                <ArrowRight className="w-8 h-8 text-primary" />
+              </div>
+
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  <CreditCard className="w-8 h-8 text-primary" />
+                </div>
+                <p className="text-base font-medium">Real money loads via Stripe</p>
+                <ArrowDown className="w-6 h-6 text-primary md:hidden" />
+              </div>
+
+              <div className="hidden md:flex items-center justify-center">
+                <ArrowRight className="w-8 h-8 text-primary" />
+              </div>
+
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Smartphone className="w-8 h-8 text-primary" />
+                </div>
+                <p className="text-base font-medium">Goes straight to their phone's wallet</p>
+              </div>
+            </div>
 
             <div className="pt-6 text-base text-muted-foreground">
               <p>
