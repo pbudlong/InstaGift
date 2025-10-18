@@ -37,7 +37,6 @@ Preferred communication style: Simple, everyday language.
 
 **Routing & Navigation**
 - `/` - Intro page: Problem/solution landing with "See How It Works" CTA
-- `/demo-guide` - Demo guide: Explains prefilled scenario and 4-step walkthrough
 - `/home` - Home page: Main gift creation CTA and hero section
 - `/create` - Gift creator flow
 - `/gift/:id` - Gift redemption view for recipients
@@ -45,7 +44,7 @@ Preferred communication style: Simple, everyday language.
 
 **Key User Flows**
 1. **Hackathon Presentation Flow** (for judges):
-   - Intro page (/) → Demo Guide → Home → Gift Creation → Payment Success → Tech Stack
+   - Intro page (/) → Home → Gift Creation → Payment Success → Tech Stack
 2. **Gift Creation Flow**:
    - Home page with hero section and CTA
    - Gift creation: URL input → AI analysis → customization → checkout
