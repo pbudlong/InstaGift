@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sparkles, Link as LinkIcon, Smartphone, Gift, CreditCard, Zap } from 'lucide-react';
 import heroImage from '@assets/generated_images/Gift_card_in_wallet_hero_734c4c48.png';
+import Logo from './Logo';
 
 interface LandingPageProps {
   onCreateGift: () => void;
@@ -12,6 +13,11 @@ export default function LandingPage({ onCreateGift }: LandingPageProps) {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+        {/* Logo in upper left */}
+        <div className="absolute top-6 left-6 z-20">
+          <Logo variant="light" />
+        </div>
+        
         {/* Background image with dark overlay */}
         <div className="absolute inset-0 z-0">
           <img 

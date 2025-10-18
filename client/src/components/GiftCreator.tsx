@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, Loader2, ArrowLeft } from 'lucide-react';
 import GiftCard from './GiftCard';
+import Logo from './Logo';
 import type { BusinessAnalysis } from '@shared/schema';
 
 interface GiftCreatorProps {
@@ -61,15 +62,17 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="max-w-7xl mx-auto px-6">
-        <Button 
-          variant="ghost" 
-          onClick={onBack}
-          className="mb-6"
-          data-testid="button-back"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
-        </Button>
+        <div className="flex items-center justify-between mb-6">
+          <Logo />
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            data-testid="button-back"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Button>
+        </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left Column - Form */}

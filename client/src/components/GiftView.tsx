@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Smartphone, CreditCard, Copy, Check } from 'lucide-react';
 import GiftCard from './GiftCard';
+import Logo from './Logo';
 import confetti from 'canvas-confetti';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -69,6 +70,9 @@ export default function GiftView({ gift }: GiftViewProps) {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-6 py-12">
+        <div className="mb-8">
+          <Logo />
+        </div>
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-3 font-display">
             A Gift For You! 🎁
