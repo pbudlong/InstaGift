@@ -37,10 +37,12 @@ Preferred communication style: Simple, everyday language.
 
 **Authentication System**
 - Password-protected access for public viewing
-- 4-character password: "iGft"
+- Default 4-character password: "iGft" (for initial demo access)
+- Admin approval system with unique password generation per user
 - localStorage-based session with 24-hour inactivity expiration
 - Session timestamp updates on user interactions (click, keypress, scroll)
-- Email request form (simulated, no backend)
+- Access request flow: users submit email → admin approves → unique password sent
+- Database-backed password validation (checks both default and approved passwords)
 
 **Routing & Navigation**
 - `/` - Landing page: Centered logo, click-anywhere to trigger password modal
@@ -49,6 +51,7 @@ Preferred communication style: Simple, everyday language.
 - `/create` - Gift creator flow (protected)
 - `/gift/:id` - Gift redemption view for recipients (public)
 - `/tech` - Technical implementation overview (public)
+- `/requests` - Admin page for approving access requests and viewing unique passwords (public)
 
 **Key User Flows**
 1. **Public Access Flow**:
@@ -89,12 +92,18 @@ Preferred communication style: Simple, everyday language.
 - `POST /api/create-gift` - Gift card creation with Stripe Issuing virtual card
 - `GET /api/gifts/:id` - Gift card retrieval
 - `POST /api/send-gift-sms` - Simulated SMS sending (demo mode, logs only)
+- `POST /api/request-access` - Submit access request (saves to DB, sends admin notification)
+- `GET /api/access-requests` - List all access requests (for admin page)
+- `POST /api/approve-access` - Approve request, generate unique password, send email
+- `POST /api/check-password` - Validate password (checks default "iGft" + approved passwords)
 
 **Data Storage**
-- In-memory storage using Map data structures (MemStorage class)
+- PostgreSQL database via Neon serverless driver
+- Drizzle ORM for type-safe database queries
 - Schema validation with Zod
-- UUID-based identifiers for users and gifts
-- Designed for rapid prototyping; database-ready architecture (Drizzle ORM schema defined)
+- UUID-based identifiers for users, gifts, and access requests
+- Tables: users, gifts, access_requests
+- Access requests track: email, approved status, unique password, creation timestamp
 
 **Business Logic**
 - AI business analysis generates: business name, type, brand colors, emoji, vibe, and description
@@ -129,12 +138,20 @@ Preferred communication style: Simple, everyday language.
 - Canvas confetti for celebration animations on successful payments
 - Form validation with React Hook Form and Zod resolvers
 
-**Database (Prepared, Not Active)**
+**Database (Active)**
 - Drizzle ORM with PostgreSQL dialect configured
-- Neon Database serverless driver ready for integration
-- Schema defined for users and gifts tables with proper typing
+- Neon Database serverless driver for connection pooling
+- Schema defined for users, gifts, and access_requests tables with proper typing
 - Migration directory configured at `./migrations`
-- Connection via `DATABASE_URL` environment variable (not currently required)
+- Connection via `DATABASE_URL` environment variable
+- Push schema changes via `npm run db:push`
+
+**Gmail Integration (Active)**
+- Google Gmail API for sending emails via pete@hundy.com
+- OAuth2 authentication managed by Replit connectors
+- Access request notifications sent to pete@hundy.com with link to /requests
+- Approval emails sent to users with their unique 4-letter password
+- Cute gift-related passwords: wrap, bows, card, joy!, love, give, gift, peek, cute, kiss, etc.
 
 **Development Tools**
 - Replit-specific plugins for runtime error overlay and dev banner
