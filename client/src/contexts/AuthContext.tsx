@@ -19,6 +19,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const updateActivity = () => {
+    const authState: AuthState = {
+      lastActivity: Date.now(),
+    };
+    localStorage.setItem(AUTH_KEY, JSON.stringify(authState));
+  };
+
   const checkAuth = () => {
     const stored = localStorage.getItem(AUTH_KEY);
     if (!stored) return false;
@@ -29,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const hoursSinceActivity = (now - authState.lastActivity) / (1000 * 60 * 60);
 
       if (hoursSinceActivity < EXPIRY_HOURS) {
+        // Update activity timestamp on successful auth check
         updateActivity();
         return true;
       } else {
@@ -41,15 +49,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateActivity = () => {
-    const authState: AuthState = {
-      lastActivity: Date.now(),
-    };
-    localStorage.setItem(AUTH_KEY, JSON.stringify(authState));
-  };
-
+  // Check auth on mount
   useEffect(() => {
-    setIsAuthenticated(checkAuth());
+    const isValid = checkAuth();
+    setIsAuthenticated(isValid);
   }, []);
 
   useEffect(() => {
