@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Logo from '@/components/Logo';
 import PasswordModal from '@/components/PasswordModal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,14 +6,30 @@ import { useLocation } from 'wouter';
 
 export default function Landing() {
   const [showModal, setShowModal] = useState(false);
-  const { checkPassword } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
 
-  const handleClick = () => {
-    setShowModal(true);
+  // If already authenticated, redirect to intro
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation('/intro');
+    }
+  }, [isAuthenticated, setLocation]);
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Don't open modal if clicking inside modal content
+    const target = e.target as HTMLElement;
+    if (target.closest('[role="dialog"]')) {
+      return;
+    }
+    
+    if (!isAuthenticated) {
+      setShowModal(true);
+    }
   };
 
   const handlePasswordSuccess = () => {
+    setShowModal(false);
     setLocation('/intro');
   };
 

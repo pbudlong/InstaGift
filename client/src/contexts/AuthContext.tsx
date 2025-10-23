@@ -66,8 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkPassword = (password: string): boolean => {
     if (password.length === 4 && password === CORRECT_PASSWORD) {
-      updateActivity();
       setIsAuthenticated(true);
+      updateActivity();
       return true;
     }
     return false;
