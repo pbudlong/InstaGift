@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PasswordModalProps {
   open: boolean;
@@ -23,6 +24,7 @@ export default function PasswordModal({ open, onSuccess }: PasswordModalProps) {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { checkPassword } = useAuth();
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,9 +38,7 @@ export default function PasswordModal({ open, onSuccess }: PasswordModalProps) {
       return;
     }
 
-    // This will be handled by the parent component via useAuth
-    const mockCheck = password === 'demo';
-    if (mockCheck) {
+    if (checkPassword(password)) {
       onSuccess();
     } else {
       toast({
