@@ -81,8 +81,8 @@ export async function sendPasswordRequestEmail(userEmail: string) {
 export async function sendApprovedAccessEmail(userEmail: string, password: string) {
   const gmail = await getUncachableGmailClient();
   
-  const subject = 'Your InstaGift Access Approved! 🎁';
-  const body = `Great news! Your access to InstaGift has been approved.\n\nYour unique password: ${password}\n\nVisit https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co to get started.\n\nEnjoy creating personalized gift cards!`;
+  const subject = 'Your InstaGift Access Approved!';
+  const body = `Great news! Your access to InstaGift has been approved.\n\nYour unique password: ${password}\n\nVisit https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co to get started.\n\nEnjoy your personalized gift card demo with InstaGift!`;
   
   const message = [
     'Content-Type: text/plain; charset="UTF-8"\n',
