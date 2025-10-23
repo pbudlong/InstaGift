@@ -334,6 +334,8 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
                   variant="outline" 
                   onClick={onHome}
                   data-testid="button-modify-gift"
+                  disabled
+                  className="opacity-50 cursor-not-allowed"
                 >
                   Modify Gift Details
                 </Button>
