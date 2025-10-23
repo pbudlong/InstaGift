@@ -25,18 +25,15 @@ export default function Landing() {
       data-testid="landing-container"
     >
       <div className="flex-1 flex items-center justify-center">
-        <div className="scale-150">
+        <div className="scale-[2.25]">
           <Logo />
         </div>
       </div>
 
       <div className="pb-12">
-        <div className="text-center space-y-4">
+        <div className="text-center">
           <p className="text-xl font-medium text-primary animate-pulse">
             Check It Out
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Click anywhere to continue
           </p>
         </div>
       </div>

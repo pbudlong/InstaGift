@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-const CORRECT_PASSWORD = 'demo';
+const CORRECT_PASSWORD = 'iGft';
 const AUTH_KEY = 'instagift_auth';
 const EXPIRY_HOURS = 24;
 

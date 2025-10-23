@@ -37,7 +37,7 @@ Preferred communication style: Simple, everyday language.
 
 **Authentication System**
 - Password-protected access for public viewing
-- 4-character password: "demo"
+- 4-character password: "iGft"
 - localStorage-based session with 24-hour inactivity expiration
 - Session timestamp updates on user interactions (click, keypress, scroll)
 - Email request form (simulated, no backend)
