@@ -16,9 +16,10 @@ import { useAuth } from '@/contexts/AuthContext';
 interface PasswordModalProps {
   open: boolean;
   onSuccess: () => void;
+  onClose?: () => void;
 }
 
-export default function PasswordModal({ open, onSuccess }: PasswordModalProps) {
+export default function PasswordModal({ open, onSuccess, onClose }: PasswordModalProps) {
   const [password, setPassword] = useState('');
   const [showEmailRequest, setShowEmailRequest] = useState(false);
   const [email, setEmail] = useState('');
@@ -82,9 +83,15 @@ export default function PasswordModal({ open, onSuccess }: PasswordModalProps) {
     }
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen && onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-2xl font-display">Enter Password</DialogTitle>
           <DialogDescription>

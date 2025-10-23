@@ -14,8 +14,11 @@ export default function Landing() {
   };
 
   const handlePasswordSuccess = () => {
-    // Verify password through auth context
     setLocation('/intro');
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
   };
 
   return (
@@ -41,6 +44,7 @@ export default function Landing() {
       <PasswordModal
         open={showModal}
         onSuccess={handlePasswordSuccess}
+        onClose={handleModalClose}
       />
     </div>
   );

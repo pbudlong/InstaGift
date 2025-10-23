@@ -17,7 +17,20 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Initialize state by checking localStorage on mount
+    const stored = localStorage.getItem(AUTH_KEY);
+    if (!stored) return false;
+
+    try {
+      const authState: AuthState = JSON.parse(stored);
+      const now = Date.now();
+      const hoursSinceActivity = (now - authState.lastActivity) / (1000 * 60 * 60);
+      return hoursSinceActivity < EXPIRY_HOURS;
+    } catch {
+      return false;
+    }
+  });
 
   const updateActivity = () => {
     const authState: AuthState = {
@@ -26,33 +39,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(AUTH_KEY, JSON.stringify(authState));
   };
 
-  const checkAuth = () => {
-    const stored = localStorage.getItem(AUTH_KEY);
-    if (!stored) return false;
-
-    try {
-      const authState: AuthState = JSON.parse(stored);
-      const now = Date.now();
-      const hoursSinceActivity = (now - authState.lastActivity) / (1000 * 60 * 60);
-
-      if (hoursSinceActivity < EXPIRY_HOURS) {
-        // Update activity timestamp on successful auth check
-        updateActivity();
-        return true;
-      } else {
-        localStorage.removeItem(AUTH_KEY);
-        return false;
-      }
-    } catch {
-      localStorage.removeItem(AUTH_KEY);
-      return false;
-    }
-  };
-
-  // Check auth on mount
+  // Update activity on mount if already authenticated
   useEffect(() => {
-    const isValid = checkAuth();
-    setIsAuthenticated(isValid);
+    if (isAuthenticated) {
+      updateActivity();
+    }
   }, []);
 
   useEffect(() => {
