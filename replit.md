@@ -150,8 +150,10 @@ Preferred communication style: Simple, everyday language.
 - Google Gmail API for sending emails via pete@hundy.com
 - OAuth2 authentication managed by Replit connectors
 - Access request notifications sent to pete@hundy.com with link to /requests
+- Admin uses checkbox UI at /requests to select and approve access requests
 - Approval emails sent to users with their unique 4-letter password
-- Cute gift-related passwords: wrap, bows, card, joy!, love, give, gift, peek, cute, kiss, etc.
+- **BCC to pete@hundy.com** on all approval emails so admin receives copies
+- Cute gift-related passwords: wrap, bows, card, joy!, love, give, gift, peek, cute, kiss, best, etc.
 
 **Development Tools**
 - Replit-specific plugins for runtime error overlay and dev banner
