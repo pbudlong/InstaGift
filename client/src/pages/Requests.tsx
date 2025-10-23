@@ -16,10 +16,7 @@ export default function Requests() {
 
   const approveMutation = useMutation({
     mutationFn: async (requestId: string) => {
-      return await apiRequest('/api/approve-access', {
-        method: 'POST',
-        body: JSON.stringify({ requestId }),
-      });
+      return await apiRequest('POST', '/api/approve-access', { requestId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/access-requests'] });
