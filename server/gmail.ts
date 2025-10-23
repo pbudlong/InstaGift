@@ -53,13 +53,41 @@ export async function getUncachableGmailClient() {
 export async function sendPasswordRequestEmail(userEmail: string) {
   const gmail = await getUncachableGmailClient();
   
-  const subject = 'InstaGift Password Request';
-  const body = `Someone requested access to InstaGift demo.\n\nTheir email: ${userEmail}\n\nPassword: iGft`;
+  const subject = 'New InstaGift Access Request';
+  const body = `Someone requested access to InstaGift demo.\n\nTheir email: ${userEmail}\n\nPlease approve this request at: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/requests`;
   
   const message = [
     'Content-Type: text/plain; charset="UTF-8"\n',
     'MIME-Version: 1.0\n',
     `To: pete@hundy.com\n`,
+    `Subject: ${subject}\n\n`,
+    body
+  ].join('');
+
+  const encodedMessage = Buffer.from(message)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+  await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: {
+      raw: encodedMessage,
+    },
+  });
+}
+
+export async function sendApprovedAccessEmail(userEmail: string, password: string) {
+  const gmail = await getUncachableGmailClient();
+  
+  const subject = 'Your InstaGift Access Approved! 🎁';
+  const body = `Great news! Your access to InstaGift has been approved.\n\nYour unique password: ${password}\n\nVisit https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co to get started.\n\nEnjoy creating personalized gift cards!`;
+  
+  const message = [
+    'Content-Type: text/plain; charset="UTF-8"\n',
+    'MIME-Version: 1.0\n',
+    `To: ${userEmail}\n`,
     `Subject: ${subject}\n\n`,
     body
   ].join('');

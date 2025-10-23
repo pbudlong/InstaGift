@@ -10,7 +10,7 @@ interface AuthState {
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  checkPassword: (password: string) => boolean;
+  checkPassword: (password: string) => Promise<boolean>;
   updateActivity: () => void;
 }
 
@@ -64,13 +64,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [isAuthenticated]);
 
-  const checkPassword = (password: string): boolean => {
-    if (password.length === 4 && password === CORRECT_PASSWORD) {
-      setIsAuthenticated(true);
-      updateActivity();
-      return true;
+  const checkPassword = async (password: string): Promise<boolean> => {
+    if (password.length !== 4) {
+      return false;
     }
-    return false;
+
+    try {
+      const response = await fetch('/api/check-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+      
+      const data = await response.json();
+      
+      if (data.valid) {
+        setIsAuthenticated(true);
+        updateActivity();
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Password check error:', error);
+      return false;
+    }
   };
 
   return (

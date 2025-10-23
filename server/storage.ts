@@ -1,5 +1,6 @@
-import { type User, type InsertUser, type Gift, type InsertGift } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { type User, type InsertUser, type Gift, type InsertGift, type AccessRequest, type InsertAccessRequest, users, gifts, accessRequests } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -9,65 +10,76 @@ export interface IStorage {
   createGift(gift: InsertGift): Promise<Gift>;
   getGift(id: string): Promise<Gift | undefined>;
   getAllGifts(): Promise<Gift[]>;
+  
+  createAccessRequest(request: InsertAccessRequest): Promise<AccessRequest>;
+  getAccessRequest(id: string): Promise<AccessRequest | undefined>;
+  getAccessRequestByEmail(email: string): Promise<AccessRequest | undefined>;
+  getAllAccessRequests(): Promise<AccessRequest[]>;
+  updateAccessRequest(id: string, updates: Partial<AccessRequest>): Promise<AccessRequest | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private gifts: Map<string, Gift>;
-
-  constructor() {
-    this.users = new Map();
-    this.gifts = new Map();
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
   async createGift(insertGift: InsertGift): Promise<Gift> {
-    const id = randomUUID();
-    const gift: Gift = { 
-      businessName: insertGift.businessName,
-      businessType: insertGift.businessType,
-      brandColors: insertGift.brandColors || null,
-      emoji: insertGift.emoji || null,
-      amount: insertGift.amount,
-      recipientName: insertGift.recipientName,
-      recipientEmail: insertGift.recipientEmail || null,
-      recipientPhone: insertGift.recipientPhone || null,
-      message: insertGift.message || null,
-      stripeCardholderId: insertGift.stripeCardholderId || null,
-      stripeCardId: insertGift.stripeCardId || null,
-      cardNumber: insertGift.cardNumber || null,
-      cardExpiry: insertGift.cardExpiry || null,
-      cardCvv: insertGift.cardCvv || null,
-      id,
+    const [gift] = await db.insert(gifts).values({
+      ...insertGift,
       createdAt: new Date().toISOString()
-    };
-    this.gifts.set(id, gift);
+    }).returning();
     return gift;
   }
 
   async getGift(id: string): Promise<Gift | undefined> {
-    return this.gifts.get(id);
+    const [gift] = await db.select().from(gifts).where(eq(gifts.id, id));
+    return gift || undefined;
   }
 
   async getAllGifts(): Promise<Gift[]> {
-    return Array.from(this.gifts.values());
+    return await db.select().from(gifts);
+  }
+
+  async createAccessRequest(insertRequest: InsertAccessRequest): Promise<AccessRequest> {
+    const [request] = await db.insert(accessRequests).values({
+      ...insertRequest,
+      createdAt: new Date().toISOString()
+    }).returning();
+    return request;
+  }
+
+  async getAccessRequest(id: string): Promise<AccessRequest | undefined> {
+    const [request] = await db.select().from(accessRequests).where(eq(accessRequests.id, id));
+    return request || undefined;
+  }
+
+  async getAccessRequestByEmail(email: string): Promise<AccessRequest | undefined> {
+    const [request] = await db.select().from(accessRequests).where(eq(accessRequests.email, email));
+    return request || undefined;
+  }
+
+  async getAllAccessRequests(): Promise<AccessRequest[]> {
+    return await db.select().from(accessRequests);
+  }
+
+  async updateAccessRequest(id: string, updates: Partial<AccessRequest>): Promise<AccessRequest | undefined> {
+    const [request] = await db.update(accessRequests)
+      .set(updates)
+      .where(eq(accessRequests.id, id))
+      .returning();
+    return request || undefined;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

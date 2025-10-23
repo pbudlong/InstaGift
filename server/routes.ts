@@ -4,9 +4,10 @@ import { storage } from "./storage";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import Stripe from "stripe";
-import { businessAnalysisSchema, insertGiftSchema } from "@shared/schema";
+import { businessAnalysisSchema, insertGiftSchema, insertAccessRequestSchema } from "@shared/schema";
 import { z } from "zod";
-import { sendPasswordRequestEmail } from "./gmail";
+import { sendPasswordRequestEmail, sendApprovedAccessEmail } from "./gmail";
+import { generateGiftPassword } from "./password-generator";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required secret: STRIPE_SECRET_KEY');
@@ -302,23 +303,104 @@ Return ONLY the JSON object, no other text.`;
 
   app.post("/api/request-access", async (req, res) => {
     try {
-      const { email } = req.body;
+      const validated = insertAccessRequestSchema.parse(req.body);
       
-      if (!email) {
-        return res.status(400).json({ message: "Email is required" });
+      const existing = await storage.getAccessRequestByEmail(validated.email);
+      if (existing) {
+        return res.status(400).json({ message: "Access request already submitted for this email" });
       }
 
-      await sendPasswordRequestEmail(email);
+      const request = await storage.createAccessRequest(validated);
+      
+      await sendPasswordRequestEmail(validated.email);
       
       res.json({ 
         success: true, 
-        message: "Access request sent successfully" 
+        message: "Access request submitted successfully. You'll receive an email when approved." 
       });
     } catch (error: any) {
       console.error("Access request error:", error);
       res.status(500).json({ 
-        message: "Error sending access request: " + error.message 
+        message: "Error submitting access request: " + error.message 
       });
+    }
+  });
+
+  app.get("/api/access-requests", async (req, res) => {
+    try {
+      const requests = await storage.getAllAccessRequests();
+      res.json(requests);
+    } catch (error: any) {
+      console.error("Error fetching access requests:", error);
+      res.status(500).json({ 
+        message: "Error fetching access requests: " + error.message 
+      });
+    }
+  });
+
+  app.post("/api/approve-access", async (req, res) => {
+    try {
+      const { requestId } = req.body;
+      
+      if (!requestId) {
+        return res.status(400).json({ message: "Request ID is required" });
+      }
+
+      const request = await storage.getAccessRequest(requestId);
+      if (!request) {
+        return res.status(404).json({ message: "Access request not found" });
+      }
+
+      if (request.approved) {
+        return res.status(400).json({ message: "Request already approved" });
+      }
+
+      const password = generateGiftPassword();
+      
+      const updated = await storage.updateAccessRequest(requestId, {
+        approved: true,
+        password
+      });
+
+      if (!updated) {
+        return res.status(500).json({ message: "Failed to update request" });
+      }
+
+      await sendApprovedAccessEmail(request.email, password);
+      
+      res.json({ 
+        success: true, 
+        message: "Access approved and email sent" 
+      });
+    } catch (error: any) {
+      console.error("Approve access error:", error);
+      res.status(500).json({ 
+        message: "Error approving access: " + error.message 
+      });
+    }
+  });
+
+  app.post("/api/check-password", async (req, res) => {
+    try {
+      const { password } = req.body;
+      
+      if (!password || password.length !== 4) {
+        return res.json({ valid: false });
+      }
+
+      if (password === 'iGft') {
+        return res.json({ valid: true });
+      }
+
+      const requests = await storage.getAllAccessRequests();
+      const approvedRequest = requests.find(
+        req => req.approved && req.password === password
+      );
+
+      res.json({ valid: !!approvedRequest });
+    } catch (error: any) {
+      console.error("Check password error:", error);
+      res.json({ valid: false });
     }
   });
 

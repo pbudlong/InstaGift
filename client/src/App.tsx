@@ -11,6 +11,7 @@ import Home from "@/pages/Home";
 import Create from "@/pages/Create";
 import Gift from "@/pages/Gift";
 import Tech from "@/pages/Tech";
+import Requests from "@/pages/Requests";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -34,6 +35,7 @@ function Router() {
       </Route>
       <Route path="/gift/:id" component={Gift} />
       <Route path="/tech" component={Tech} />
+      <Route path="/requests" component={Requests} />
       <Route component={NotFound} />
     </Switch>
   );

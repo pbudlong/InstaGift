@@ -27,7 +27,7 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
   const { toast } = useToast();
   const { checkPassword } = useAuth();
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (password.length !== 4) {
@@ -39,15 +39,27 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
       return;
     }
 
-    if (checkPassword(password)) {
-      onSuccess();
-    } else {
+    setIsSubmitting(true);
+    try {
+      const isValid = await checkPassword(password);
+      if (isValid) {
+        onSuccess();
+      } else {
+        toast({
+          title: "Incorrect Password",
+          description: "Please try again or request access",
+          variant: "destructive",
+        });
+        setPassword('');
+      }
+    } catch (error) {
       toast({
-        title: "Incorrect Password",
-        description: "Please try again or request access",
+        title: "Error",
+        description: "Failed to verify password. Please try again.",
         variant: "destructive",
       });
-      setPassword('');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -119,8 +131,9 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
             type="submit"
             className="w-full"
             data-testid="button-submit-password"
+            disabled={isSubmitting}
           >
-            Continue
+            {isSubmitting ? 'Verifying...' : 'Continue'}
           </Button>
         </form>
 
