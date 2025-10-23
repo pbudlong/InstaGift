@@ -6,6 +6,7 @@ import OpenAI from "openai";
 import Stripe from "stripe";
 import { businessAnalysisSchema, insertGiftSchema } from "@shared/schema";
 import { z } from "zod";
+import { sendPasswordRequestEmail } from "./gmail";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required secret: STRIPE_SECRET_KEY');
@@ -295,6 +296,28 @@ Return ONLY the JSON object, no other text.`;
       console.error("SMS error:", error);
       res.status(500).json({ 
         message: "Error sending SMS: " + error.message 
+      });
+    }
+  });
+
+  app.post("/api/request-access", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      await sendPasswordRequestEmail(email);
+      
+      res.json({ 
+        success: true, 
+        message: "Access request sent successfully" 
+      });
+    } catch (error: any) {
+      console.error("Access request error:", error);
+      res.status(500).json({ 
+        message: "Error sending access request: " + error.message 
       });
     }
   });

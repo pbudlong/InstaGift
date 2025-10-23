@@ -50,20 +50,36 @@ export default function PasswordModal({ open, onSuccess }: PasswordModalProps) {
     }
   };
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate email request (no actual backend call)
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/request-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send request');
+      }
+
       toast({
         title: "Request Submitted!",
         description: "We'll send you access details shortly",
       });
       setEmail('');
       setShowEmailRequest(false);
+    } catch (error) {
+      toast({
+        title: "Request Failed",
+        description: "Please try again or contact support",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
