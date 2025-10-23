@@ -35,27 +35,37 @@ Preferred communication style: Simple, everyday language.
 - Local component state with React hooks for UI interactions
 - Custom toast notifications for user feedback
 
+**Authentication System**
+- Password-protected access for public viewing
+- 4-character password: "demo"
+- localStorage-based session with 24-hour inactivity expiration
+- Session timestamp updates on user interactions (click, keypress, scroll)
+- Email request form (simulated, no backend)
+
 **Routing & Navigation**
-- `/` - Intro page: Problem/solution landing with "See How It Works" CTA
-- `/home` - Home page: Main gift creation CTA and hero section
-- `/create` - Gift creator flow
-- `/gift/:id` - Gift redemption view for recipients
-- `/tech` - Technical implementation overview (real vs simulated features)
+- `/` - Landing page: Centered logo, click-anywhere to trigger password modal
+- `/intro` - Intro page: Problem/solution landing with "See How It Works" CTA (protected)
+- `/home` - Home page: Main gift creation CTA and hero section (protected)
+- `/create` - Gift creator flow (protected)
+- `/gift/:id` - Gift redemption view for recipients (public)
+- `/tech` - Technical implementation overview (public)
 
 **Key User Flows**
-1. **Hackathon Presentation Flow** (for judges):
-   - Intro page (/) → Home → Gift Creation → Payment Success → Tech Stack
-2. **Gift Creation Flow**:
+1. **Public Access Flow**:
+   - Landing (/) → Password Modal → Intro → Home → Gift Creation → Payment Success → Tech Stack
+2. **Hackathon Presentation Flow** (for judges):
+   - Enter password "demo" once → Access valid for 24 hours → Full demo experience
+3. **Gift Creation Flow**:
    - Home page with hero section and CTA
    - Gift creation: URL input → AI analysis → customization → checkout
    - Payment processing via Stripe Elements (test card: 4242 4242 4242 4242)
-3. **Payment Success Page**:
+4. **Payment Success Page**:
    - Preview gift card link (shows card design only)
    - SMS sending tab (simulated, no actual Twilio)
    - Link sharing tab with QR code
    - "View Full Recipient Experience" CTA appears after SMS/link actions
    - "View Tech Stack" button links to `/tech` page
-4. **Gift Redemption View** (recipient experience):
+5. **Gift Redemption View** (recipient experience):
    - Branded gift card display
    - Real Stripe Issuing card details (PAN, expiry, CVV)
    - "Add to Apple Pay/Google Pay" button (simulated provisioning with confetti)
