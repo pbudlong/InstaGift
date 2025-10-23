@@ -50,11 +50,22 @@ export async function getUncachableGmailClient() {
   return google.gmail({ version: 'v1', auth: oauth2Client });
 }
 
+function getAppUrl() {
+  // In production (published), use REPLIT_DOMAINS
+  if (process.env.REPLIT_DOMAINS) {
+    const domains = process.env.REPLIT_DOMAINS.split(',');
+    return `https://${domains[0]}`;
+  }
+  // In development, use dev URL
+  return `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`;
+}
+
 export async function sendPasswordRequestEmail(userEmail: string) {
   const gmail = await getUncachableGmailClient();
   
   const subject = 'New InstaGift Access Request';
-  const body = `Someone requested access to InstaGift demo.\n\nTheir email: ${userEmail}\n\nPlease approve this request at: https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co/requests`;
+  const appUrl = getAppUrl();
+  const body = `Someone requested access to InstaGift demo.\n\nTheir email: ${userEmail}\n\nPlease approve this request at: ${appUrl}/requests`;
   
   const message = [
     'Content-Type: text/plain; charset="UTF-8"\n',
@@ -82,7 +93,8 @@ export async function sendApprovedAccessEmail(userEmail: string, password: strin
   const gmail = await getUncachableGmailClient();
   
   const subject = 'Your InstaGift Access Approved!';
-  const body = `Great news! Your access to InstaGift has been approved.\n\nYour unique password: ${password}\n\nVisit https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co to get started.\n\nEnjoy your personalized gift card demo with InstaGift!`;
+  const appUrl = getAppUrl();
+  const body = `Great news! Your access to InstaGift has been approved.\n\nYour unique password: ${password}\n\nVisit ${appUrl} to get started.\n\nEnjoy your personalized gift card demo with InstaGift!`;
   
   const message = [
     'Content-Type: text/plain; charset="UTF-8"\n',

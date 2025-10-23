@@ -80,7 +80,7 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
 
       toast({
         title: "Request Submitted!",
-        description: "We'll send you access details shortly",
+        description: "Will send access details once you are approved",
       });
       setEmail('');
       setShowEmailRequest(false);
