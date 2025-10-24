@@ -317,14 +317,16 @@ Return ONLY the JSON object, no other text.`;
         }
       }
 
-      const request = await storage.createAccessRequest(validated);
-      
+      // Send notification FIRST, only save to DB if it succeeds
       if (validated.email) {
         await sendPasswordRequestEmail(validated.email);
       } else if (validated.phone) {
         const { sendAdminNotificationSMS } = await import('./telnyx.js');
         await sendAdminNotificationSMS(validated.phone, false);
       }
+      
+      // Only save to database after notification succeeds
+      const request = await storage.createAccessRequest(validated);
       
       res.json({ 
         success: true, 

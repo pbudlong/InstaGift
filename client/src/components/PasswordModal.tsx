@@ -107,6 +107,7 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
         title: "Request Failed",
         description: errorMessage,
         variant: "destructive",
+        duration: 4000, // Auto-dismiss after 4 seconds
       });
     } finally {
       setIsSubmitting(false);
