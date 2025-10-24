@@ -41,8 +41,11 @@ Preferred communication style: Simple, everyday language.
 - Admin approval system with unique password generation per user
 - localStorage-based session with 24-hour inactivity expiration
 - Session timestamp updates on user interactions (click, keypress, scroll)
-- Access request flow: users submit email → admin approves → unique password sent
+- Access request flow: users submit email OR phone → admin approves → unique password sent
 - Database-backed password validation (checks both default and approved passwords)
+- **SMS Integration**: Users can request access via phone number (E.164 format required)
+  - Admin receives SMS notification when phone-based request submitted
+  - Approved users receive password via SMS instead of email
 
 **Routing & Navigation**
 - `/` - Landing page: Centered logo, click-anywhere to trigger password modal
@@ -92,18 +95,18 @@ Preferred communication style: Simple, everyday language.
 - `POST /api/create-gift` - Gift card creation with Stripe Issuing virtual card
 - `GET /api/gifts/:id` - Gift card retrieval
 - `POST /api/send-gift-sms` - Simulated SMS sending (demo mode, logs only)
-- `POST /api/request-access` - Submit access request (saves to DB, sends admin notification)
+- `POST /api/request-access` - Submit access request via email OR phone (saves to DB, sends admin notification)
 - `GET /api/access-requests` - List all access requests (for admin page)
-- `POST /api/approve-access` - Approve request, generate unique password, send email
+- `POST /api/approve-access` - Approve request, generate unique password, send via email or SMS
 - `POST /api/check-password` - Validate password (checks default "iGft" + approved passwords)
 
 **Data Storage**
 - PostgreSQL database via Neon serverless driver
 - Drizzle ORM for type-safe database queries
-- Schema validation with Zod
+- Schema validation with Zod (including E.164 phone number format validation)
 - UUID-based identifiers for users, gifts, and access requests
 - Tables: users, gifts, access_requests
-- Access requests track: email, approved status, unique password, creation timestamp
+- Access requests track: email OR phone (E.164 format), approved status, unique password, creation timestamp
 
 **Business Logic**
 - AI business analysis generates: business name, type, brand colors, emoji, vibe, and description
@@ -155,6 +158,17 @@ Preferred communication style: Simple, everyday language.
 - **BCC to pete@hundy.com** on all approval emails so admin receives copies
 - Cute gift-related passwords: wrap, bows, card, joy!, love, give, gift, peek, cute, kiss, best, etc.
 
+**Telnyx SMS Integration (Active)**
+- Telnyx API for sending SMS notifications
+- Environment variables: `TELNYX_API_KEY`, `TELNYX_PHONE_NUMBER`, `ADMIN_PHONE_NUMBER`
+- **Two-way notification flow**:
+  - When user requests access via phone number → Admin receives SMS notification
+  - When admin approves phone-based request → User receives password via SMS
+- **E.164 phone number format required**: +[country code][number] (e.g., +15551234567)
+- Password modal includes tabs for Email vs Phone Number input
+- Schema validation ensures phone numbers match E.164 format before storage
+- Error handling: SMS failures throw errors instead of silently succeeding
+
 **Development Tools**
 - Replit-specific plugins for runtime error overlay and dev banner
 - TypeScript with strict mode enabled
@@ -176,7 +190,11 @@ Preferred communication style: Simple, everyday language.
 - All form placeholders pre-filled with demo values
 
 **Demo Limitations (Hackathon MVP)**
-- SMS sending is simulated (no Twilio integration, just logs and success messages)
+- Gift recipient SMS (via /api/send-gift-sms) is simulated for demo purposes (logs only)
 - Wallet provisioning is simulated (confetti + success message, no actual Apple/Google Pay API)
 - Card details stored in memory (not PCI-compliant for production; would require Stripe ephemeral keys)
-- No authentication or user accounts (open demo)
+- Access control uses password-based system instead of full user accounts
+
+**Real SMS Features (Production-Ready)**
+- Admin SMS notifications via Telnyx (when users request access with phone)
+- Password delivery via Telnyx SMS (when phone-based requests are approved)
