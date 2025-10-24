@@ -118,3 +118,61 @@ export async function sendApprovedAccessEmail(userEmail: string, password: strin
     },
   });
 }
+
+export async function sendAdminPhoneRequestEmail(phoneNumber: string) {
+  const gmail = await getUncachableGmailClient();
+  
+  const subject = 'New InstaGift Access Request (Phone)';
+  const appUrl = getAppUrl();
+  const body = `Someone requested access to InstaGift demo via phone number.\n\nTheir phone: ${phoneNumber}\n\nPlease approve this request at: ${appUrl}/requests\n\nNote: An SMS notification was also sent to your admin phone number.`;
+  
+  const message = [
+    'Content-Type: text/plain; charset="UTF-8"\n',
+    'MIME-Version: 1.0\n',
+    `To: pete@hundy.com\n`,
+    `Subject: ${subject}\n\n`,
+    body
+  ].join('');
+
+  const encodedMessage = Buffer.from(message)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+  await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: {
+      raw: encodedMessage,
+    },
+  });
+}
+
+export async function sendAdminPasswordSMSCopy(phoneNumber: string, password: string) {
+  const gmail = await getUncachableGmailClient();
+  
+  const subject = 'InstaGift Access Approved (SMS Sent)';
+  const appUrl = getAppUrl();
+  const body = `You approved access for a phone-based request.\n\nPhone number: ${phoneNumber}\nPassword sent via SMS: ${password}\n\nThe user should receive their password via SMS shortly.\n\nApp URL: ${appUrl}`;
+  
+  const message = [
+    'Content-Type: text/plain; charset="UTF-8"\n',
+    'MIME-Version: 1.0\n',
+    `To: pete@hundy.com\n`,
+    `Subject: ${subject}\n\n`,
+    body
+  ].join('');
+
+  const encodedMessage = Buffer.from(message)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+  await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: {
+      raw: encodedMessage,
+    },
+  });
+}

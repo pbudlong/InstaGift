@@ -6,7 +6,7 @@ import OpenAI from "openai";
 import Stripe from "stripe";
 import { businessAnalysisSchema, insertGiftSchema, insertAccessRequestSchema } from "@shared/schema";
 import { z } from "zod";
-import { sendPasswordRequestEmail, sendApprovedAccessEmail } from "./gmail";
+import { sendPasswordRequestEmail, sendApprovedAccessEmail, sendAdminPhoneRequestEmail, sendAdminPasswordSMSCopy } from "./gmail";
 import { generateGiftPassword } from "./password-generator";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -322,7 +322,10 @@ Return ONLY the JSON object, no other text.`;
         await sendPasswordRequestEmail(validated.email);
       } else if (validated.phone) {
         const { sendAdminNotificationSMS } = await import('./twilio.js');
-        await sendAdminNotificationSMS(validated.phone, false);
+        await Promise.all([
+          sendAdminNotificationSMS(validated.phone, false),
+          sendAdminPhoneRequestEmail(validated.phone)
+        ]);
       }
       
       // Only save to database after notification succeeds
@@ -392,7 +395,10 @@ Return ONLY the JSON object, no other text.`;
         await sendApprovedAccessEmail(request.email, password);
       } else if (request.phone) {
         const { sendPasswordSMS } = await import('./twilio.js');
-        await sendPasswordSMS(request.phone, password);
+        await Promise.all([
+          sendPasswordSMS(request.phone, password),
+          sendAdminPasswordSMSCopy(request.phone, password)
+        ]);
       }
       
       res.json({ 
