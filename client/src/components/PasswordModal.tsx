@@ -72,8 +72,8 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
 
     try {
       const payload = contactTab === 'email' 
-        ? { email } 
-        : { phone };
+        ? { email: email.trim() } 
+        : { phone: phone.trim() };
 
       const response = await fetch('/api/request-access', {
         method: 'POST',
@@ -82,7 +82,8 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send request');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to send request');
       }
 
       toast({
@@ -93,9 +94,10 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
       setPhone('');
       setShowEmailRequest(false);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Please try again or contact support";
       toast({
         title: "Request Failed",
-        description: "Please try again or contact support",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

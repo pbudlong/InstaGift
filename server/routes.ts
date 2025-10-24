@@ -332,6 +332,14 @@ Return ONLY the JSON object, no other text.`;
       });
     } catch (error: any) {
       console.error("Access request error:", error);
+      
+      // Handle Zod validation errors
+      if (error.name === 'ZodError') {
+        const firstError = error.issues?.[0];
+        const errorMessage = firstError?.message || "Invalid input format";
+        return res.status(400).json({ message: errorMessage });
+      }
+      
       res.status(500).json({ 
         message: "Error submitting access request: " + error.message 
       });
