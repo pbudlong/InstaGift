@@ -29,13 +29,14 @@ export async function sendAdminNotificationSMS(contactInfo: string, isEmail: boo
     const contactType = isEmail ? 'Email' : 'Phone';
     const message = `New InstaGift Access Request\n\n${contactType}: ${contactInfo}\n\nReview at: ${appUrl}/requests`;
 
-    await twilioClient.messages.create({
+    const result = await twilioClient.messages.create({
       body: message,
       from: twilioPhoneNumber,
       to: adminPhoneNumber,
     });
 
     console.log('Admin SMS notification sent successfully via Twilio');
+    console.log('Twilio Message SID:', result.sid, 'Status:', result.status, 'To:', result.to);
   } catch (error: any) {
     console.error('Error sending admin SMS via Twilio:', error);
     
@@ -62,13 +63,14 @@ export async function sendPasswordSMS(phoneNumber: string, password: string): Pr
   try {
     const message = `Your InstaGift access password is: ${password}\n\nUse this to access the demo at ${getAppUrl()}`;
 
-    await twilioClient.messages.create({
+    const result = await twilioClient.messages.create({
       body: message,
       from: twilioPhoneNumber,
       to: phoneNumber,
     });
 
     console.log('Password SMS sent successfully via Twilio to', phoneNumber);
+    console.log('Twilio Message SID:', result.sid, 'Status:', result.status, 'To:', result.to);
   } catch (error: any) {
     console.error('Error sending password SMS via Twilio:', error);
     
