@@ -23,7 +23,7 @@ interface PasswordModalProps {
 export default function PasswordModal({ open, onSuccess, onClose }: PasswordModalProps) {
   const [password, setPassword] = useState('');
   const [showEmailRequest, setShowEmailRequest] = useState(false);
-  const [contactTab, setContactTab] = useState<'email' | 'phone'>('email');
+  const [contactTab, setContactTab] = useState<'email' | 'phone'>('phone');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -166,35 +166,9 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
             <div className="mt-4">
               <Tabs value={contactTab} onValueChange={(v) => setContactTab(v as 'email' | 'phone')}>
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="email" data-testid="tab-email">Email</TabsTrigger>
                   <TabsTrigger value="phone" data-testid="tab-phone">Phone Number</TabsTrigger>
+                  <TabsTrigger value="email" data-testid="tab-email">Email</TabsTrigger>
                 </TabsList>
-                
-                <TabsContent value="email">
-                  <form onSubmit={handleContactSubmit} className="space-y-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-sm">Your Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="email@example.com"
-                        required
-                        data-testid="input-email"
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      variant="outline"
-                      className="w-full"
-                      disabled={isSubmitting}
-                      data-testid="button-request-access"
-                    >
-                      {isSubmitting ? 'Submitting...' : 'Request Access'}
-                    </Button>
-                  </form>
-                </TabsContent>
                 
                 <TabsContent value="phone">
                   <form onSubmit={handleContactSubmit} className="space-y-3">
@@ -219,6 +193,32 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
                       className="w-full"
                       disabled={isSubmitting}
                       data-testid="button-request-access-phone"
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Request Access'}
+                    </Button>
+                  </form>
+                </TabsContent>
+                
+                <TabsContent value="email">
+                  <form onSubmit={handleContactSubmit} className="space-y-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm">Your Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="email@example.com"
+                        required
+                        data-testid="input-email"
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      variant="outline"
+                      className="w-full"
+                      disabled={isSubmitting}
+                      data-testid="button-request-access"
                     >
                       {isSubmitting ? 'Submitting...' : 'Request Access'}
                     </Button>
