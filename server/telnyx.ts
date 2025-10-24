@@ -36,9 +36,15 @@ export async function sendAdminNotificationSMS(contactInfo: string, isEmail: boo
   } catch (error: any) {
     console.error('Error sending admin SMS:', error);
     
-    // Check for invalid phone number error
-    if (error.status === 400 && error.error?.errors?.[0]?.code === '40013') {
-      throw new Error('Invalid Telnyx phone number. Please verify TELNYX_PHONE_NUMBER is SMS-enabled and in E.164 format (+1XXXXXXXXXX).');
+    // Check for specific Telnyx errors
+    const errorCode = error.error?.errors?.[0]?.code;
+    if (error.status === 400) {
+      if (errorCode === '40013') {
+        throw new Error('Invalid Telnyx phone number. Please verify TELNYX_PHONE_NUMBER is SMS-enabled and in E.164 format (+1XXXXXXXXXX).');
+      }
+      if (errorCode === '40305') {
+        throw new Error('Telnyx phone number not configured. Please verify TELNYX_PHONE_NUMBER is associated with a messaging profile in your Telnyx dashboard.');
+      }
     }
     
     throw new Error(`Failed to send admin SMS notification: ${error.message}`);
@@ -63,9 +69,15 @@ export async function sendPasswordSMS(phoneNumber: string, password: string): Pr
   } catch (error: any) {
     console.error('Error sending password SMS:', error);
     
-    // Check for invalid phone number error
-    if (error.status === 400 && error.error?.errors?.[0]?.code === '40013') {
-      throw new Error('Invalid Telnyx phone number. Please verify TELNYX_PHONE_NUMBER is SMS-enabled and in E.164 format (+1XXXXXXXXXX).');
+    // Check for specific Telnyx errors
+    const errorCode = error.error?.errors?.[0]?.code;
+    if (error.status === 400) {
+      if (errorCode === '40013') {
+        throw new Error('Invalid Telnyx phone number. Please verify TELNYX_PHONE_NUMBER is SMS-enabled and in E.164 format (+1XXXXXXXXXX).');
+      }
+      if (errorCode === '40305') {
+        throw new Error('Telnyx phone number not configured. Please verify TELNYX_PHONE_NUMBER is associated with a messaging profile in your Telnyx dashboard.');
+      }
     }
     
     throw new Error(`Failed to send password SMS: ${error.message}`);
