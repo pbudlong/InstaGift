@@ -60,18 +60,24 @@ export type BusinessAnalysis = z.infer<typeof businessAnalysisSchema>;
 // Access requests schema
 export const accessRequests = pgTable("access_requests", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: text("email").notNull().unique(),
+  email: text("email"),
+  phone: text("phone"),
   password: text("password"),
   approved: boolean("approved").notNull().default(false),
   createdAt: text("created_at").notNull(),
 });
 
-export const insertAccessRequestSchema = createInsertSchema(accessRequests).omit({
-  id: true,
-  createdAt: true,
-  password: true,
-  approved: true,
-});
+export const insertAccessRequestSchema = createInsertSchema(accessRequests)
+  .omit({
+    id: true,
+    createdAt: true,
+    password: true,
+    approved: true,
+  })
+  .refine(
+    (data) => data.email || data.phone,
+    { message: "Either email or phone number is required" }
+  );
 
 export type InsertAccessRequest = z.infer<typeof insertAccessRequestSchema>;
 export type AccessRequest = typeof accessRequests.$inferSelect;
