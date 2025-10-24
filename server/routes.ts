@@ -321,7 +321,7 @@ Return ONLY the JSON object, no other text.`;
       if (validated.email) {
         await sendPasswordRequestEmail(validated.email);
       } else if (validated.phone) {
-        const { sendAdminNotificationSMS } = await import('./telnyx.js');
+        const { sendAdminNotificationSMS } = await import('./twilio.js');
         await sendAdminNotificationSMS(validated.phone, false);
       }
       
@@ -391,7 +391,7 @@ Return ONLY the JSON object, no other text.`;
       if (request.email) {
         await sendApprovedAccessEmail(request.email, password);
       } else if (request.phone) {
-        const { sendPasswordSMS } = await import('./telnyx.js');
+        const { sendPasswordSMS } = await import('./twilio.js');
         await sendPasswordSMS(request.phone, password);
       }
       

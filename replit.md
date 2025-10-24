@@ -158,9 +158,9 @@ Preferred communication style: Simple, everyday language.
 - **BCC to pete@hundy.com** on all approval emails so admin receives copies
 - Cute gift-related passwords: wrap, bows, card, joy!, love, give, gift, peek, cute, kiss, best, etc.
 
-**Telnyx SMS Integration (Active)**
-- Telnyx API for sending SMS notifications
-- Environment variables: `TELNYX_API_KEY`, `TELNYX_PHONE_NUMBER`, `ADMIN_PHONE_NUMBER`
+**Twilio SMS Integration (Active)**
+- Twilio API for sending SMS notifications
+- Environment variables: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, `ADMIN_PHONE_NUMBER`
 - **Two-way notification flow**:
   - When user requests access via phone number → Admin receives SMS notification
   - When admin approves phone-based request → User receives password via SMS
@@ -168,6 +168,7 @@ Preferred communication style: Simple, everyday language.
 - Password modal includes tabs for Email vs Phone Number input
 - Schema validation ensures phone numbers match E.164 format before storage
 - Error handling: SMS failures throw errors instead of silently succeeding
+- **Note**: Previously used Telnyx but switched to Twilio due to trial account limitations (Telnyx requires paid account upgrade for messaging profiles)
 
 **Development Tools**
 - Replit-specific plugins for runtime error overlay and dev banner
