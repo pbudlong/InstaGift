@@ -25,7 +25,7 @@ export default function Requests() {
       setSelectedRequests(new Set());
       toast({
         title: 'Access Approved!',
-        description: 'Users have been sent their unique passwords via email (BCC to you)',
+        description: 'Users have been sent their unique passwords',
       });
     },
     onError: (error: any) => {
@@ -114,7 +114,9 @@ export default function Requests() {
                         data-testid={`checkbox-${request.id}`}
                       />
                       <div className="space-y-1 flex-1">
-                        <CardTitle className="text-lg">{request.email}</CardTitle>
+                        <CardTitle className="text-lg">
+                          {request.email || request.phone}
+                        </CardTitle>
                         <CardDescription>
                           Requested {new Date(request.createdAt).toLocaleDateString()}
                         </CardDescription>
@@ -139,7 +141,7 @@ export default function Requests() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <CardTitle className="text-lg">{request.email}</CardTitle>
+                        <CardTitle className="text-lg">{request.email || request.phone}</CardTitle>
                         <CardDescription>
                           Password: <span className="font-mono font-semibold text-foreground">{request.password}</span>
                         </CardDescription>

@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,7 +23,9 @@ interface PasswordModalProps {
 export default function PasswordModal({ open, onSuccess, onClose }: PasswordModalProps) {
   const [password, setPassword] = useState('');
   const [showEmailRequest, setShowEmailRequest] = useState(false);
+  const [contactTab, setContactTab] = useState<'email' | 'phone'>('email');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const { checkPassword } = useAuth();
@@ -63,15 +66,19 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
     }
   };
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      const payload = contactTab === 'email' 
+        ? { email } 
+        : { phone };
+
       const response = await fetch('/api/request-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -83,6 +90,7 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
         description: "Will send access details once you are approved",
       });
       setEmail('');
+      setPhone('');
       setShowEmailRequest(false);
     } catch (error) {
       toast({
@@ -153,29 +161,69 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
           </button>
 
           {showEmailRequest && (
-            <form onSubmit={handleEmailSubmit} className="mt-4 space-y-3">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm">Your Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com"
-                  required
-                  data-testid="input-email"
-                />
-              </div>
-              <Button
-                type="submit"
-                variant="outline"
-                className="w-full"
-                disabled={isSubmitting}
-                data-testid="button-request-access"
-              >
-                {isSubmitting ? 'Submitting...' : 'Request Access'}
-              </Button>
-            </form>
+            <div className="mt-4">
+              <Tabs value={contactTab} onValueChange={(v) => setContactTab(v as 'email' | 'phone')}>
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="email" data-testid="tab-email">Email</TabsTrigger>
+                  <TabsTrigger value="phone" data-testid="tab-phone">Phone Number</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="email">
+                  <form onSubmit={handleContactSubmit} className="space-y-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm">Your Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="email@example.com"
+                        required
+                        data-testid="input-email"
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      variant="outline"
+                      className="w-full"
+                      disabled={isSubmitting}
+                      data-testid="button-request-access"
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Request Access'}
+                    </Button>
+                  </form>
+                </TabsContent>
+                
+                <TabsContent value="phone">
+                  <form onSubmit={handleContactSubmit} className="space-y-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-sm">Your Phone Number</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+15551234567"
+                        required
+                        data-testid="input-phone"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Format: +[country code][number] (e.g., +15551234567)
+                      </p>
+                    </div>
+                    <Button
+                      type="submit"
+                      variant="outline"
+                      className="w-full"
+                      disabled={isSubmitting}
+                      data-testid="button-request-access-phone"
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Request Access'}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            </div>
           )}
         </div>
       </DialogContent>

@@ -14,6 +14,7 @@ export interface IStorage {
   createAccessRequest(request: InsertAccessRequest): Promise<AccessRequest>;
   getAccessRequest(id: string): Promise<AccessRequest | undefined>;
   getAccessRequestByEmail(email: string): Promise<AccessRequest | undefined>;
+  getAccessRequestByPhone(phone: string): Promise<AccessRequest | undefined>;
   getAllAccessRequests(): Promise<AccessRequest[]>;
   updateAccessRequest(id: string, updates: Partial<AccessRequest>): Promise<AccessRequest | undefined>;
 }
@@ -66,6 +67,11 @@ export class DatabaseStorage implements IStorage {
 
   async getAccessRequestByEmail(email: string): Promise<AccessRequest | undefined> {
     const [request] = await db.select().from(accessRequests).where(eq(accessRequests.email, email));
+    return request || undefined;
+  }
+
+  async getAccessRequestByPhone(phone: string): Promise<AccessRequest | undefined> {
+    const [request] = await db.select().from(accessRequests).where(eq(accessRequests.phone, phone));
     return request || undefined;
   }
 

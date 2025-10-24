@@ -305,18 +305,30 @@ Return ONLY the JSON object, no other text.`;
     try {
       const validated = insertAccessRequestSchema.parse(req.body);
       
-      const existing = await storage.getAccessRequestByEmail(validated.email);
-      if (existing) {
-        return res.status(400).json({ message: "Access request already submitted for this email" });
+      if (validated.email) {
+        const existing = await storage.getAccessRequestByEmail(validated.email);
+        if (existing) {
+          return res.status(400).json({ message: "Access request already submitted for this email" });
+        }
+      } else if (validated.phone) {
+        const existing = await storage.getAccessRequestByPhone(validated.phone);
+        if (existing) {
+          return res.status(400).json({ message: "Access request already submitted for this phone number" });
+        }
       }
 
       const request = await storage.createAccessRequest(validated);
       
-      await sendPasswordRequestEmail(validated.email);
+      if (validated.email) {
+        await sendPasswordRequestEmail(validated.email);
+      } else if (validated.phone) {
+        const { sendAdminNotificationSMS } = await import('./telnyx.js');
+        await sendAdminNotificationSMS(validated.phone, false);
+      }
       
       res.json({ 
         success: true, 
-        message: "Access request submitted successfully. You'll receive an email when approved." 
+        message: "Access request submitted successfully." 
       });
     } catch (error: any) {
       console.error("Access request error:", error);
@@ -366,11 +378,16 @@ Return ONLY the JSON object, no other text.`;
         return res.status(500).json({ message: "Failed to update request" });
       }
 
-      await sendApprovedAccessEmail(request.email, password);
+      if (request.email) {
+        await sendApprovedAccessEmail(request.email, password);
+      } else if (request.phone) {
+        const { sendPasswordSMS } = await import('./telnyx.js');
+        await sendPasswordSMS(request.phone, password);
+      }
       
       res.json({ 
         success: true, 
-        message: "Access approved and email sent" 
+        message: "Access approved and notification sent" 
       });
     } catch (error: any) {
       console.error("Approve access error:", error);
