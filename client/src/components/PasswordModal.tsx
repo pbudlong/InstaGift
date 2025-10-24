@@ -38,6 +38,7 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
         title: "Invalid Password",
         description: "Password must be exactly 4 characters",
         variant: "destructive",
+        duration: 4000,
       });
       return;
     }
@@ -52,6 +53,7 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
           title: "Incorrect Password",
           description: "Please try again or request access",
           variant: "destructive",
+          duration: 4000,
         });
         setPassword('');
       }
@@ -60,6 +62,7 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
         title: "Error",
         description: "Failed to verify password. Please try again.",
         variant: "destructive",
+        duration: 4000,
       });
     } finally {
       setIsSubmitting(false);
@@ -97,6 +100,7 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
       toast({
         title: "Request Submitted!",
         description: "Will send access details once you are approved",
+        duration: 4000,
       });
       setEmail('');
       setPhone('');
