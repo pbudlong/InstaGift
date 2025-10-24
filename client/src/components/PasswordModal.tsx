@@ -71,9 +71,17 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
     setIsSubmitting(true);
 
     try {
-      const payload = contactTab === 'email' 
-        ? { email: email.trim() } 
-        : { phone: phone.trim() };
+      let payload;
+      if (contactTab === 'email') {
+        payload = { email: email.trim() };
+      } else {
+        // Auto-prepend +1 for US numbers if not already included
+        let normalizedPhone = phone.trim().replace(/[\s\-\(\)]/g, ''); // Remove spaces, dashes, parens
+        if (!normalizedPhone.startsWith('+')) {
+          normalizedPhone = '+1' + normalizedPhone;
+        }
+        payload = { phone: normalizedPhone };
+      }
 
       const response = await fetch('/api/request-access', {
         method: 'POST',
@@ -173,18 +181,18 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
                 <TabsContent value="phone">
                   <form onSubmit={handleContactSubmit} className="space-y-3">
                     <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-sm">Your Phone Number</Label>
+                      <Label htmlFor="phone" className="text-sm">Your Phone Number (US)</Label>
                       <Input
                         id="phone"
                         type="tel"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+15551234567"
+                        placeholder="555-123-4567"
                         required
                         data-testid="input-phone"
                       />
                       <p className="text-xs text-muted-foreground">
-                        Format: +[country code][number] (e.g., +15551234567)
+                        We'll automatically add +1 for US numbers
                       </p>
                     </div>
                     <Button

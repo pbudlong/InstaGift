@@ -75,7 +75,7 @@ export const insertAccessRequestSchema = createInsertSchema(accessRequests)
     approved: true,
   })
   .extend({
-    phone: z.string().regex(/^\+[1-9]\d{1,14}$/, "Phone number must be in E.164 format (e.g., +15551234567)").optional(),
+    phone: z.string().regex(/^\+1\d{10}$/, "Phone number must be a valid US number (10 digits)").optional(),
   })
   .refine(
     (data) => data.email || data.phone,
