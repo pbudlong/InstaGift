@@ -35,6 +35,12 @@ export async function sendAdminNotificationSMS(contactInfo: string, isEmail: boo
     console.log('Admin SMS notification sent successfully');
   } catch (error: any) {
     console.error('Error sending admin SMS:', error);
+    
+    // Check for invalid phone number error
+    if (error.status === 400 && error.error?.errors?.[0]?.code === '40013') {
+      throw new Error('Invalid Telnyx phone number. Please verify TELNYX_PHONE_NUMBER is SMS-enabled and in E.164 format (+1XXXXXXXXXX).');
+    }
+    
     throw new Error(`Failed to send admin SMS notification: ${error.message}`);
   }
 }
@@ -56,6 +62,12 @@ export async function sendPasswordSMS(phoneNumber: string, password: string): Pr
     console.log('Password SMS sent successfully to', phoneNumber);
   } catch (error: any) {
     console.error('Error sending password SMS:', error);
+    
+    // Check for invalid phone number error
+    if (error.status === 400 && error.error?.errors?.[0]?.code === '40013') {
+      throw new Error('Invalid Telnyx phone number. Please verify TELNYX_PHONE_NUMBER is SMS-enabled and in E.164 format (+1XXXXXXXXXX).');
+    }
+    
     throw new Error(`Failed to send password SMS: ${error.message}`);
   }
 }

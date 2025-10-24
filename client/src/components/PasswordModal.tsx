@@ -191,9 +191,6 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
                         required
                         data-testid="input-phone"
                       />
-                      <p className="text-xs text-muted-foreground">
-                        We'll automatically add +1 for US numbers
-                      </p>
                     </div>
                     <Button
                       type="submit"
