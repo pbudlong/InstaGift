@@ -39,15 +39,18 @@ export async function sendAdminNotificationSMS(contactInfo: string, isEmail: boo
   // Try Telnyx first (primary)
   if (telnyx && telnyxPhoneNumber) {
     try {
-      await telnyx.messages.send({
+      const result = await telnyx.messages.send({
         from: telnyxPhoneNumber,
         to: adminPhoneNumber,
         text: message,
       });
       console.log('✅ Admin SMS notification sent successfully via Telnyx (primary)');
+      console.log('Telnyx Message ID:', result.data?.id, 'To:', result.data?.to?.[0]?.phone_number, 'Status:', result.data?.to?.[0]?.status);
+      console.log('Full Telnyx response:', JSON.stringify(result.data, null, 2));
       return;
     } catch (error: any) {
       console.error('⚠️ Telnyx failed, trying Twilio fallback:', error.message);
+      console.error('Telnyx error details:', JSON.stringify(error, null, 2));
     }
   }
 
@@ -89,15 +92,18 @@ export async function sendPasswordSMS(phoneNumber: string, password: string): Pr
   // Try Telnyx first (primary)
   if (telnyx && telnyxPhoneNumber) {
     try {
-      await telnyx.messages.send({
+      const result = await telnyx.messages.send({
         from: telnyxPhoneNumber,
         to: phoneNumber,
         text: message,
       });
       console.log('✅ Password SMS sent successfully via Telnyx (primary) to', phoneNumber);
+      console.log('Telnyx Message ID:', result.data?.id, 'To:', result.data?.to?.[0]?.phone_number, 'Status:', result.data?.to?.[0]?.status);
+      console.log('Full Telnyx response:', JSON.stringify(result.data, null, 2));
       return;
     } catch (error: any) {
       console.error('⚠️ Telnyx failed, trying Twilio fallback:', error.message);
+      console.error('Telnyx error details:', JSON.stringify(error, null, 2));
     }
   }
 
