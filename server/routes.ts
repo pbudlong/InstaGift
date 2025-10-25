@@ -413,6 +413,32 @@ Return ONLY the JSON object, no other text.`;
     }
   });
 
+  app.delete("/api/access-requests/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      if (!id) {
+        return res.status(400).json({ message: "Request ID is required" });
+      }
+
+      const deleted = await storage.deleteAccessRequest(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Access request not found" });
+      }
+
+      res.json({ 
+        success: true, 
+        message: "Access request deleted" 
+      });
+    } catch (error: any) {
+      console.error("Delete access request error:", error);
+      res.status(500).json({ 
+        message: "Error deleting access request: " + error.message 
+      });
+    }
+  });
+
   app.post("/api/check-password", async (req, res) => {
     try {
       const { password } = req.body;

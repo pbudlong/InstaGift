@@ -17,6 +17,7 @@ export interface IStorage {
   getAccessRequestByPhone(phone: string): Promise<AccessRequest | undefined>;
   getAllAccessRequests(): Promise<AccessRequest[]>;
   updateAccessRequest(id: string, updates: Partial<AccessRequest>): Promise<AccessRequest | undefined>;
+  deleteAccessRequest(id: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -85,6 +86,13 @@ export class DatabaseStorage implements IStorage {
       .where(eq(accessRequests.id, id))
       .returning();
     return request || undefined;
+  }
+
+  async deleteAccessRequest(id: string): Promise<boolean> {
+    const result = await db.delete(accessRequests)
+      .where(eq(accessRequests.id, id))
+      .returning();
+    return result.length > 0;
   }
 }
 

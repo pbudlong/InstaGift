@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle2, Mail, Clock } from 'lucide-react';
+import { CheckCircle2, Mail, Clock, Trash2 } from 'lucide-react';
 import type { AccessRequest } from '@shared/schema';
 
 export default function Requests() {
@@ -32,6 +32,26 @@ export default function Requests() {
       toast({
         title: 'Approval Failed',
         description: error.message || 'Failed to approve access request',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (requestId: string) => {
+      return await apiRequest('DELETE', `/api/access-requests/${requestId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/access-requests'] });
+      toast({
+        title: 'Request Deleted',
+        description: 'Access request has been removed',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Delete Failed',
+        description: error.message || 'Failed to delete access request',
         variant: 'destructive',
       });
     },
@@ -139,14 +159,25 @@ export default function Requests() {
               {approvedRequests.map((request) => (
                 <Card key={request.id} className="border-green-200 dark:border-green-900">
                   <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="space-y-1 flex-1">
                         <CardTitle className="text-lg">{request.email || request.phone}</CardTitle>
                         <CardDescription>
                           Password: <span className="font-mono font-semibold text-foreground">{request.password}</span>
                         </CardDescription>
                       </div>
-                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5 text-green-500" />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteMutation.mutate(request.id)}
+                          disabled={deleteMutation.isPending}
+                          data-testid={`button-delete-${request.id}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
                 </Card>
