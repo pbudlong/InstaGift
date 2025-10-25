@@ -1,13 +1,21 @@
 import twilio from 'twilio';
+import Telnyx from 'telnyx';
 
+// Telnyx configuration (primary)
+const telnyxApiKey = process.env.TELNYX_API_KEY;
+const telnyxPhoneNumber = process.env.TELNYX_PHONE_NUMBER;
+const telnyx = telnyxApiKey ? new Telnyx({ apiKey: telnyxApiKey }) : null;
+
+// Twilio configuration (fallback)
 const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
-const adminPhoneNumber = process.env.ADMIN_PHONE_NUMBER;
 
 const twilioClient = twilioAccountSid && twilioAuthToken 
   ? twilio(twilioAccountSid, twilioAuthToken) 
   : null;
+
+const adminPhoneNumber = process.env.ADMIN_PHONE_NUMBER;
 
 function getAppUrl(): string {
   if (process.env.REPLIT_DOMAINS) {
@@ -20,25 +28,45 @@ function getAppUrl(): string {
 }
 
 export async function sendAdminNotificationSMS(contactInfo: string, isEmail: boolean): Promise<void> {
-  if (!twilioClient || !twilioPhoneNumber || !adminPhoneNumber) {
-    throw new Error('Twilio SMS is not configured. Please add TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER, and ADMIN_PHONE_NUMBER to environment secrets.');
+  if (!adminPhoneNumber) {
+    throw new Error('ADMIN_PHONE_NUMBER is not configured.');
+  }
+
+  const appUrl = getAppUrl();
+  const contactType = isEmail ? 'Email' : 'Phone';
+  const message = `New InstaGift Access Request\n\n${contactType}: ${contactInfo}\n\nReview at: ${appUrl}/requests`;
+
+  // Try Telnyx first (primary)
+  if (telnyx && telnyxPhoneNumber) {
+    try {
+      await telnyx.messages.send({
+        from: telnyxPhoneNumber,
+        to: adminPhoneNumber,
+        text: message,
+      });
+      console.log('✅ Admin SMS notification sent successfully via Telnyx (primary)');
+      return;
+    } catch (error: any) {
+      console.error('⚠️ Telnyx failed, trying Twilio fallback:', error.message);
+    }
+  }
+
+  // Fall back to Twilio
+  if (!twilioClient || !twilioPhoneNumber) {
+    throw new Error('Both Telnyx and Twilio SMS are not configured properly. Please check your environment secrets.');
   }
 
   try {
-    const appUrl = getAppUrl();
-    const contactType = isEmail ? 'Email' : 'Phone';
-    const message = `New InstaGift Access Request\n\n${contactType}: ${contactInfo}\n\nReview at: ${appUrl}/requests`;
-
     const result = await twilioClient.messages.create({
       body: message,
       from: twilioPhoneNumber,
       to: adminPhoneNumber,
     });
 
-    console.log('Admin SMS notification sent successfully via Twilio');
+    console.log('✅ Admin SMS notification sent successfully via Twilio (fallback)');
     console.log('Twilio Message SID:', result.sid, 'Status:', result.status, 'To:', result.to);
   } catch (error: any) {
-    console.error('Error sending admin SMS via Twilio:', error);
+    console.error('❌ Error sending admin SMS via Twilio:', error);
     
     // Check for specific Twilio errors
     if (error.code === 21211) {
@@ -56,23 +84,39 @@ export async function sendAdminNotificationSMS(contactInfo: string, isEmail: boo
 }
 
 export async function sendPasswordSMS(phoneNumber: string, password: string): Promise<void> {
+  const message = `Your InstaGift access password is: ${password}\n\nUse this to access the demo at ${getAppUrl()}`;
+
+  // Try Telnyx first (primary)
+  if (telnyx && telnyxPhoneNumber) {
+    try {
+      await telnyx.messages.send({
+        from: telnyxPhoneNumber,
+        to: phoneNumber,
+        text: message,
+      });
+      console.log('✅ Password SMS sent successfully via Telnyx (primary) to', phoneNumber);
+      return;
+    } catch (error: any) {
+      console.error('⚠️ Telnyx failed, trying Twilio fallback:', error.message);
+    }
+  }
+
+  // Fall back to Twilio
   if (!twilioClient || !twilioPhoneNumber) {
-    throw new Error('Twilio SMS is not configured. Please add TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER to environment secrets.');
+    throw new Error('Both Telnyx and Twilio SMS are not configured properly. Please check your environment secrets.');
   }
 
   try {
-    const message = `Your InstaGift access password is: ${password}\n\nUse this to access the demo at ${getAppUrl()}`;
-
     const result = await twilioClient.messages.create({
       body: message,
       from: twilioPhoneNumber,
       to: phoneNumber,
     });
 
-    console.log('Password SMS sent successfully via Twilio to', phoneNumber);
+    console.log('✅ Password SMS sent successfully via Twilio (fallback) to', phoneNumber);
     console.log('Twilio Message SID:', result.sid, 'Status:', result.status, 'To:', result.to);
   } catch (error: any) {
-    console.error('Error sending password SMS via Twilio:', error);
+    console.error('❌ Error sending password SMS via Twilio:', error);
     
     // Check for specific Twilio errors
     if (error.code === 21211) {
