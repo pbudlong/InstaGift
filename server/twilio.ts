@@ -4,7 +4,7 @@ import Telnyx from 'telnyx';
 // Telnyx configuration (primary)
 const telnyxApiKey = process.env.TELNYX_API_KEY;
 const telnyxPhoneNumber = process.env.TELNYX_PHONE_NUMBER;
-const telnyx = telnyxApiKey ? new Telnyx({ apiKey: telnyxApiKey }) : null;
+const telnyx = telnyxApiKey ? new Telnyx(telnyxApiKey) : null;
 
 // Twilio configuration (fallback)
 const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
