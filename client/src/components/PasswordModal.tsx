@@ -184,30 +184,9 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
                 </TabsList>
                 
                 <TabsContent value="phone">
-                  <form onSubmit={handleContactSubmit} className="space-y-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-sm">Your Phone Number (US)</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="555-123-4567"
-                        required
-                        data-testid="input-phone"
-                      />
-                      <p className="text-xs text-muted-foreground">Coming soon</p>
-                    </div>
-                    <Button
-                      type="submit"
-                      variant="outline"
-                      className="w-full"
-                      disabled={isSubmitting}
-                      data-testid="button-request-access-phone"
-                    >
-                      {isSubmitting ? 'Submitting...' : 'Request Access'}
-                    </Button>
-                  </form>
+                  <div className="py-8 text-center">
+                    <p className="text-sm text-muted-foreground">Coming soon</p>
+                  </div>
                 </TabsContent>
                 
                 <TabsContent value="email">
