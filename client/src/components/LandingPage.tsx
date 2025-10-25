@@ -22,7 +22,7 @@ export default function LandingPage({ onCreateGift }: LandingPageProps) {
         <div className="absolute inset-0 z-0">
           <img 
             src={heroImage} 
-            alt="Gift card in mobile wallet" 
+            alt="" 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
@@ -52,14 +52,6 @@ export default function LandingPage({ onCreateGift }: LandingPageProps) {
             >
               <Gift className="w-5 h-5 mr-2" />
               Create Your First Gift
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="text-lg px-8 py-6 bg-white/10 backdrop-blur-md border-white/30 text-white hover:bg-white/20"
-              data-testid="button-how-it-works"
-            >
-              How It Works
             </Button>
           </div>
           

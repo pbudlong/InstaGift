@@ -41,11 +41,13 @@ Preferred communication style: Simple, everyday language.
 - Admin approval system with unique password generation per user
 - localStorage-based session with 24-hour inactivity expiration
 - Session timestamp updates on user interactions (click, keypress, scroll)
-- Access request flow: users submit email OR phone → admin approves → unique password sent
+- Access request flow: users submit email (phone tab shows "Coming soon")
 - Database-backed password validation (checks both default and approved passwords)
-- **SMS Integration**: Users can request access via phone number (E.164 format required)
-  - Admin receives SMS notification when phone-based request submitted
-  - Approved users receive password via SMS instead of email
+- **Password Modal**: Email tab first, Phone Number tab second with "Coming soon" message
+- **SMS Integration (Coming Soon)**: Pending Twilio/Telnyx 10DLC campaign approval
+  - Email currently used for all access requests and password delivery
+  - Admin receives email notifications at pete@hundy.com
+  - Approved users receive password via email
 
 **Routing & Navigation**
 - `/` - Landing page: Centered logo, click-anywhere to trigger password modal
@@ -55,6 +57,7 @@ Preferred communication style: Simple, everyday language.
 - `/gift/:id` - Gift redemption view for recipients (public)
 - `/tech` - Technical implementation overview (public)
 - `/requests` - Admin page for approving access requests and viewing unique passwords (public)
+- **Scroll-to-top behavior**: Automatically scrolls to page top on all route changes for better mobile UX
 
 **Key User Flows**
 1. **Public Access Flow**:
