@@ -39,7 +39,7 @@ export async function sendAdminNotificationSMS(contactInfo: string, isEmail: boo
   // Try Telnyx first (primary)
   if (telnyx && telnyxPhoneNumber) {
     try {
-      const result = await telnyx.messages.create({
+      const result = await telnyx.messages.send({
         from: telnyxPhoneNumber,
         to: adminPhoneNumber,
         text: message,
@@ -92,7 +92,7 @@ export async function sendPasswordSMS(phoneNumber: string, password: string): Pr
   // Try Telnyx first (primary)
   if (telnyx && telnyxPhoneNumber) {
     try {
-      const result = await telnyx.messages.create({
+      const result = await telnyx.messages.send({
         from: telnyxPhoneNumber,
         to: phoneNumber,
         text: message,
