@@ -93,7 +93,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Analyze Business</CardTitle>
+                <CardTitle>Generate Gift Card</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -127,6 +127,33 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Mobile Preview - shows right after analyze button */}
+            <div className="lg:hidden">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Gift Card Preview</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {businessData ? (
+                    <GiftCard
+                      businessName={businessData.businessName}
+                      amount={amount || parseInt(customAmount) || 0}
+                      emoji={businessData.emoji}
+                      brandColors={businessData.brandColors}
+                      message={message}
+                      recipientName={recipientName}
+                    />
+                  ) : (
+                    <div className="aspect-[1.6/1] rounded-2xl bg-muted flex items-center justify-center">
+                      <p className="text-muted-foreground">
+                        Analyze a business to see your gift card
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
 
             {businessData && (
               <>
@@ -239,8 +266,8 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
             )}
           </div>
 
-          {/* Right Column - Preview */}
-          <div className="lg:sticky lg:top-6 h-fit">
+          {/* Right Column - Preview (Desktop only) */}
+          <div className="hidden lg:block lg:sticky lg:top-6 h-fit">
             <Card>
               <CardHeader>
                 <CardTitle>Gift Card Preview</CardTitle>
