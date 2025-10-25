@@ -23,7 +23,7 @@ interface PasswordModalProps {
 export default function PasswordModal({ open, onSuccess, onClose }: PasswordModalProps) {
   const [password, setPassword] = useState('');
   const [showEmailRequest, setShowEmailRequest] = useState(false);
-  const [contactTab, setContactTab] = useState<'email' | 'phone'>('phone');
+  const [contactTab, setContactTab] = useState<'email' | 'phone'>('email');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -179,8 +179,8 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
             <div className="mt-4">
               <Tabs value={contactTab} onValueChange={(v) => setContactTab(v as 'email' | 'phone')}>
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="phone" data-testid="tab-phone">Phone Number</TabsTrigger>
                   <TabsTrigger value="email" data-testid="tab-email">Email</TabsTrigger>
+                  <TabsTrigger value="phone" data-testid="tab-phone">Phone Number</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="phone">
@@ -196,6 +196,7 @@ export default function PasswordModal({ open, onSuccess, onClose }: PasswordModa
                         required
                         data-testid="input-phone"
                       />
+                      <p className="text-xs text-muted-foreground">Coming soon</p>
                     </div>
                     <Button
                       type="submit"
