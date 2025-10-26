@@ -324,6 +324,7 @@ export default function PaymentSuccess({ giftId, giftUrl, recipientPhone, onHome
                   amount={gift.amount}
                   emoji={gift.emoji || '🎁'}
                   brandColors={gift.brandColors || ['#a855f7', '#ec4899']}
+                  vibe={gift.vibe || undefined}
                   message={gift.message || undefined}
                   recipientName={gift.recipientName}
                   size="large"

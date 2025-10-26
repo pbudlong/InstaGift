@@ -141,6 +141,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                       amount={amount || parseInt(customAmount) || 0}
                       emoji={businessData.emoji}
                       brandColors={businessData.brandColors}
+                      vibe={businessData.vibe}
                       message={message}
                       recipientName={recipientName}
                     />
@@ -279,6 +280,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                     amount={amount || parseInt(customAmount) || 0}
                     emoji={businessData.emoji}
                     brandColors={businessData.brandColors}
+                    vibe={businessData.vibe}
                     message={message}
                     recipientName={recipientName}
                   />

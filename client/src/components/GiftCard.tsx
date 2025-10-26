@@ -3,6 +3,7 @@ interface GiftCardProps {
   amount: number;
   emoji?: string;
   brandColors?: string[];
+  vibe?: string;
   message?: string;
   recipientName?: string;
   size?: 'default' | 'large';
@@ -13,6 +14,7 @@ export default function GiftCard({
   amount, 
   emoji = '🎁',
   brandColors = ['#6366f1', '#8b5cf6'],
+  vibe,
   message,
   recipientName,
   size = 'default'
@@ -52,6 +54,11 @@ export default function GiftCard({
           <h3 className="text-4xl md:text-6xl font-bold font-display" data-testid="text-business-name">
             {businessName}
           </h3>
+          {vibe && (
+            <p className="text-lg md:text-2xl mt-2 opacity-90 font-light italic" data-testid="text-vibe">
+              {vibe}
+            </p>
+          )}
         </div>
         
         {/* Bottom section */}

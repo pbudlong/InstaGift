@@ -90,6 +90,7 @@ export default function GiftView({ gift }: GiftViewProps) {
             amount={gift.amount}
             emoji={gift.emoji}
             brandColors={gift.brandColors}
+            vibe={gift.vibe}
             message={gift.message}
             recipientName={gift.recipientName}
             size="large"

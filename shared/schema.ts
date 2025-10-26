@@ -24,6 +24,7 @@ export const gifts = pgTable("gifts", {
   businessType: text("business_type").notNull(),
   brandColors: text("brand_colors").array(),
   emoji: text("emoji"),
+  vibe: text("vibe"),
   amount: integer("amount").notNull(),
   recipientName: text("recipient_name").notNull(),
   recipientEmail: text("recipient_email"),
