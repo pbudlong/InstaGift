@@ -123,35 +123,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       try {
         if (anthropic) {
-          console.log('Analyzing business with Claude:', url);
+          console.log('=== CLAUDE WEB_SEARCH START ===');
+          console.log('URL:', url);
+          console.log('Creating API request with web_search tool...');
 
           const message = await anthropic.messages.create({
-            model: "claude-3-5-sonnet-20241022",
+            model: "claude-sonnet-4-5",
             max_tokens: 2048,
             messages: [{
               role: "user",
-              content: `Analyze this business website URL and provide details: ${url}
+              content: `Search for and analyze this business website: ${url}
 
-Based on the URL and your knowledge, return ONLY a JSON object with this exact structure:
+Use web search to find real information about this business, then return ONLY a JSON object with this exact structure:
 {
-  "businessName": "The business name",
+  "businessName": "The actual business name from the website",
   "businessType": "Type of business (e.g., 'Coffee Shop', 'Auto Detailing', 'Car Wash')",
-  "brandColors": ["#hex1", "#hex2"] (suggest fitting colors based on business type),
+  "brandColors": ["#hex1", "#hex2"] (extract actual brand colors from the website),
   "emoji": "A single emoji that represents the business",
-  "vibe": "Short description of the brand vibe",
+  "vibe": "Short description of the brand vibe based on website content",
   "description": "One sentence description of what the business offers"
 }
 
 Return ONLY the JSON object, no other text.`
+            }],
+            tools: [{
+              type: "web_search_20250305",
+              name: "web_search",
+              max_uses: 3
             }]
           });
 
-          for (const block of message.content) {
+          console.log('API Response received');
+          console.log('Content blocks:', message.content.length);
+          console.log('Stop reason:', message.stop_reason);
+          
+          for (let i = 0; i < message.content.length; i++) {
+            const block = message.content[i];
+            console.log(`Block ${i} type:`, block.type);
+            
             if (block.type === 'text') {
               responseText += block.text;
+              console.log(`Block ${i} text length:`, block.text.length);
+            } else if (block.type === 'tool_use') {
+              console.log(`Block ${i} tool_use:`, (block as any).name);
             }
           }
-          console.log('Claude analysis successful');
+          
+          console.log('Total response text length:', responseText.length);
+          console.log('=== CLAUDE WEB_SEARCH SUCCESS ===');
         } else {
           throw new Error("Anthropic not available");
         }
