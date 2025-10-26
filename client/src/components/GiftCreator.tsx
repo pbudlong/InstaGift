@@ -165,42 +165,36 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
             </Card>
 
             {/* Mobile Preview - shows right after analyze button */}
-            <div className="lg:hidden">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Gift Card Preview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {analyzing ? (
-                    <div className="aspect-[1.6/1] rounded-2xl bg-muted flex flex-col items-center justify-center p-6 space-y-4">
-                      <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                      <div className="w-full max-w-xs space-y-2">
-                        <p className="text-sm text-center text-muted-foreground">
-                          Analyzing business...
-                        </p>
-                        <Progress value={progress} className="w-full" />
-                      </div>
-                    </div>
-                  ) : businessData ? (
-                    <GiftCard
-                      businessName={businessData.businessName}
-                      amount={amount || parseInt(customAmount) || 0}
-                      emoji={businessData.emoji}
-                      brandColors={businessData.brandColors}
-                      vibe={businessData.vibe}
-                      message={message}
-                      recipientName={recipientName}
-                      size="large"
-                    />
-                  ) : (
-                    <div className="aspect-[1.6/1] rounded-2xl bg-muted flex items-center justify-center px-4">
-                      <p className="text-sm text-center text-muted-foreground">
-                        Gift card generated after scanning business website
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            <div className="lg:hidden space-y-4">
+              <h3 className="text-xl font-semibold">Gift Card Preview</h3>
+              {analyzing ? (
+                <div className="aspect-[1.6/1] rounded-2xl bg-muted flex flex-col items-center justify-center p-6 space-y-4">
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                  <div className="w-full max-w-xs space-y-2">
+                    <p className="text-sm text-center text-muted-foreground">
+                      Analyzing business...
+                    </p>
+                    <Progress value={progress} className="w-full" />
+                  </div>
+                </div>
+              ) : businessData ? (
+                <GiftCard
+                  businessName={businessData.businessName}
+                  amount={amount || parseInt(customAmount) || 0}
+                  emoji={businessData.emoji}
+                  brandColors={businessData.brandColors}
+                  vibe={businessData.vibe}
+                  message={message}
+                  recipientName={recipientName}
+                  size="large"
+                />
+              ) : (
+                <div className="aspect-[1.6/1] rounded-2xl bg-muted flex items-center justify-center px-4">
+                  <p className="text-sm text-center text-muted-foreground">
+                    Gift card generated after scanning business website
+                  </p>
+                </div>
+              )}
             </div>
 
             {businessData && (
