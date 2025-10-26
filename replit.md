@@ -136,14 +136,16 @@ Preferred communication style: Simple, everyday language.
 
 **AI Services**
 - **Anthropic Claude API (Primary)** for intelligent business website analysis
-  - Uses Claude's Web Fetch Tool (`web_fetch_20250910`) for secure, real-time website content extraction
-  - Fetches actual business content, brand colors, and metadata directly from live websites
-  - No custom scraping code - Claude handles all security (SSRF protection, DNS rebinding prevention)
+  - Uses Claude's Web Search Tool (`web_search_20250305`) to search and analyze live business websites
+  - Retrieves real-time information about businesses including brand colors, services, and metadata
+  - No custom scraping code - Claude's web search handles content retrieval securely
   - Environment variable: `ANTHROPIC_API_KEY`
-  - Model: `claude-3-5-sonnet-20241022`
+  - Model: `claude-sonnet-4-5` (latest, auto-updating)
+  - Tool configuration: `type: "web_search_20250305"`, `max_uses: 3`
+  - Logs show Claude makes 2 search tool uses per request to gather comprehensive business data
 - **OpenAI GPT-4 (Fallback)** for URL-based business analysis when Anthropic is unavailable
-  - Analyzes business from URL only (no web fetching capability)
-  - Provides degraded but functional service if Claude is down
+  - Analyzes business from URL pattern only (no web search capability)
+  - Provides degraded but functional service if Claude fails
   - Environment variable: `OPENAI_API_KEY`
   - Model: `gpt-4o-mini`
 - Structured JSON output parsing from AI responses for business metadata extraction
