@@ -66,7 +66,11 @@ Preferred communication style: Simple, everyday language.
    - Enter password "demo" once → Access valid for 24 hours → Full demo experience
 3. **Gift Creation Flow**:
    - Home page with hero section and CTA
-   - Gift creation: URL input → AI analysis → customization → checkout
+   - Gift creation: URL input → AI analysis with progress bar → customization → checkout
+   - **Before analysis**: Blank preview shows "Gift card generated after scanning business website"
+   - **During analysis**: Animated progress bar (0-100% over ~10 seconds) with "Analyzing business..." text
+   - **After analysis**: Gift card preview with expand button (mobile only)
+   - **Mobile fullscreen preview**: Maximize icon opens fullscreen modal with landscape hint, close button in visible header
    - Payment processing via Stripe Elements (test card: 4242 4242 4242 4242)
 4. **Payment Success Page**:
    - Preview gift card link (shows card design only)
