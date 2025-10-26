@@ -8,7 +8,6 @@ import { businessAnalysisSchema, insertGiftSchema, insertAccessRequestSchema } f
 import { z } from "zod";
 import { sendPasswordRequestEmail, sendApprovedAccessEmail, sendAdminPhoneRequestEmail, sendAdminPasswordSMSCopy } from "./gmail";
 import { generateGiftPassword } from "./password-generator";
-import { scrapeWebsite, buildEnrichedPrompt, URLValidationError } from "./scraper";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required secret: STRIPE_SECRET_KEY');
@@ -120,66 +119,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "URL is required" });
       }
 
-      // Step 1: Scrape the website for real content
-      console.log('Step 1: Scraping website for real content...');
-      let scrapedData;
-      try {
-        scrapedData = await scrapeWebsite(url);
-      } catch (error: any) {
-        if (error instanceof URLValidationError) {
-          console.error('URL validation failed:', error.message);
-          return res.status(400).json({ message: error.message });
-        }
-        throw error;
-      }
-      
-      // Step 2: Build enriched prompt with real website data
-      const prompt = buildEnrichedPrompt(url, scrapedData);
+      console.log('Analyzing business website with Claude web_fetch:', url);
 
-      // Step 3: Send to AI for analysis
+      if (!anthropic) {
+        return res.status(500).json({ message: "Anthropic API not configured" });
+      }
+
+      const message = await anthropic.messages.create({
+        model: "claude-3-5-sonnet-20241022",
+        max_tokens: 2048,
+        messages: [{
+          role: "user",
+          content: `Please fetch and analyze this business website: ${url}
+
+After fetching the website content, analyze it and return ONLY a JSON object with this exact structure:
+{
+  "businessName": "The business name from the website",
+  "businessType": "Type of business (e.g., 'Coffee Shop', 'Auto Detailing', 'Car Wash')",
+  "brandColors": ["#hex1", "#hex2"] (extract actual colors from the website or suggest fitting ones),
+  "emoji": "A single emoji that represents the business",
+  "vibe": "Short description of the brand vibe based on website content",
+  "description": "One sentence description of what the business offers"
+}
+
+Return ONLY the JSON object, no other text.`
+        }],
+        tools: [{
+          type: "web_fetch_20250910",
+          name: "web_fetch",
+          max_uses: 3
+        }],
+        extra_headers: {
+          "anthropic-beta": "web-fetch-2025-09-10"
+        } as any
+      });
+
       let responseText = '';
-      
-      try {
-        if (openai) {
-          console.log("Step 2: Using OpenAI for business analysis...");
-          const completion = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [{
-              role: "user",
-              content: prompt
-            }],
-            max_tokens: 1024,
-          });
-          
-          responseText = completion.choices[0]?.message?.content || '';
-          console.log("OpenAI analysis successful");
-        } else {
-          throw new Error("OpenAI not available");
+      for (const block of message.content) {
+        if (block.type === 'text') {
+          responseText += block.text;
         }
-      } catch (openaiError: any) {
-        console.error("OpenAI failed:", openaiError.message);
-        
-        if (!anthropic) {
-          throw new Error("Both OpenAI and Anthropic are unavailable");
-        }
-        
-        console.log("Falling back to Anthropic...");
-        const message = await anthropic.messages.create({
-          model: "claude-3-5-sonnet-20240620",
-          max_tokens: 1024,
-          messages: [{
-            role: "user",
-            content: prompt
-          }]
-        });
-
-        responseText = message.content[0].type === 'text' 
-          ? message.content[0].text 
-          : '';
-        console.log("Anthropic analysis successful");
       }
-      
-      // Step 4: Parse and validate the AI response
+
+      console.log('Claude response received');
+
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new Error("Failed to extract JSON from AI response");
@@ -191,7 +174,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Analysis complete:', {
         businessName: validatedData.businessName,
         businessType: validatedData.businessType,
-        scrapedContent: scrapedData.title ? 'Yes' : 'No (fallback mode)',
       });
       
       res.json(validatedData);
