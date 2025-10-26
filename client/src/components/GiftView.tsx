@@ -20,6 +20,7 @@ interface GiftViewProps {
     amount: number;
     emoji: string;
     brandColors: string[];
+    vibe?: string;
     message?: string;
     recipientName: string;
     cardNumber?: string;

@@ -146,6 +146,8 @@ Perform ONE web search to gather information, then return JSON only (no explanat
   "description": "1-2 sentence description"
 }
 
+IMPORTANT: For brandColors, use VIBRANT, SATURATED colors only. NEVER use white (#FFFFFF), off-white, light gray, or any color with lightness >80%. Choose rich, vivid colors that will look good as gradient backgrounds.
+
 Return ONLY valid JSON.`
             }],
             tools: [{
@@ -222,9 +224,37 @@ Return ONLY the JSON object, no other text.`
       const parsedData = JSON.parse(jsonMatch[0]);
       const validatedData = businessAnalysisSchema.parse(parsedData);
       
+      // Filter out light/white colors to prevent washed-out gradients
+      const filterLightColors = (colors: string[]): string[] => {
+        const hexToLightness = (hex: string): number => {
+          const r = parseInt(hex.slice(1, 3), 16) / 255;
+          const g = parseInt(hex.slice(3, 5), 16) / 255;
+          const b = parseInt(hex.slice(5, 7), 16) / 255;
+          const max = Math.max(r, g, b);
+          const min = Math.min(r, g, b);
+          return (max + min) / 2;
+        };
+        
+        const defaultVibrantColors = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+        
+        return colors.map((color, index) => {
+          const lightness = hexToLightness(color);
+          if (lightness > 0.75) {
+            console.log(`Replacing light color ${color} (lightness: ${lightness.toFixed(2)}) with vibrant default`);
+            return defaultVibrantColors[index % defaultVibrantColors.length];
+          }
+          return color;
+        });
+      };
+      
+      if (validatedData.brandColors) {
+        validatedData.brandColors = filterLightColors(validatedData.brandColors);
+      }
+      
       console.log('Analysis complete:', {
         businessName: validatedData.businessName,
         businessType: validatedData.businessType,
+        brandColors: validatedData.brandColors,
       });
       
       res.json(validatedData);
