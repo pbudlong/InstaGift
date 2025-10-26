@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sparkles, Loader2, ArrowLeft } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Sparkles, Loader2, ArrowLeft, Maximize2, X } from 'lucide-react';
 import GiftCard from './GiftCard';
 import Logo from './Logo';
 import type { BusinessAnalysis } from '@shared/schema';
@@ -18,6 +19,9 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
   const [url, setUrl] = useState('https://towercarwash.com');
   const [analyzing, setAnalyzing] = useState(false);
   const [businessData, setBusinessData] = useState<BusinessAnalysis | null>(null);
+  const [fullscreenPreview, setFullscreenPreview] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Gift customization
   const [amount, setAmount] = useState<number | null>(75);
@@ -29,8 +33,29 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
 
   const presetAmounts = [50, 75, 100];
 
+  // Cleanup progress interval on unmount
+  useEffect(() => {
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
+  }, []);
+
   const handleAnalyze = async () => {
     setAnalyzing(true);
+    setProgress(0);
+    
+    // Animate progress bar over 10 seconds
+    progressIntervalRef.current = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 95) {
+          return 95;
+        }
+        return prev + 5;
+      });
+    }, 500);
+    
     try {
       const response = await fetch('/api/analyze-business', {
         method: 'POST',
@@ -43,12 +68,24 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
       }
       
       const data = await response.json();
-      setBusinessData(data);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+      setProgress(100);
+      setTimeout(() => setBusinessData(data), 300);
     } catch (error) {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
       console.error('Analysis error:', error);
       alert('Failed to analyze business. Please try again.');
     } finally {
-      setAnalyzing(false);
+      setTimeout(() => {
+        setAnalyzing(false);
+        setProgress(0);
+      }, 300);
     }
   };
 
@@ -132,10 +169,32 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
             <div className="lg:hidden">
               <Card>
                 <CardHeader>
-                  <CardTitle>Gift Card Preview</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Gift Card Preview</CardTitle>
+                    {businessData && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => setFullscreenPreview(true)}
+                        data-testid="button-expand-preview"
+                      >
+                        <Maximize2 className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  {businessData ? (
+                  {analyzing ? (
+                    <div className="aspect-[1.6/1] rounded-2xl bg-muted flex flex-col items-center justify-center p-6 space-y-4">
+                      <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                      <div className="w-full max-w-xs space-y-2">
+                        <p className="text-sm text-center text-muted-foreground">
+                          Analyzing business...
+                        </p>
+                        <Progress value={progress} className="w-full" />
+                      </div>
+                    </div>
+                  ) : businessData ? (
                     <GiftCard
                       businessName={businessData.businessName}
                       amount={amount || parseInt(customAmount) || 0}
@@ -146,9 +205,9 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                       recipientName={recipientName}
                     />
                   ) : (
-                    <div className="aspect-[1.6/1] rounded-2xl bg-muted flex items-center justify-center">
-                      <p className="text-muted-foreground">
-                        Analyze a business to see your gift card
+                    <div className="aspect-[1.6/1] rounded-2xl bg-muted flex items-center justify-center px-4">
+                      <p className="text-sm text-center text-muted-foreground">
+                        Gift card generated after scanning business website
                       </p>
                     </div>
                   )}
@@ -274,7 +333,17 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                 <CardTitle>Gift Card Preview</CardTitle>
               </CardHeader>
               <CardContent>
-                {businessData ? (
+                {analyzing ? (
+                  <div className="aspect-[1.6/1] rounded-2xl bg-muted flex flex-col items-center justify-center p-6 space-y-4">
+                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                    <div className="w-full max-w-xs space-y-2">
+                      <p className="text-sm text-center text-muted-foreground">
+                        Analyzing business...
+                      </p>
+                      <Progress value={progress} className="w-full" />
+                    </div>
+                  </div>
+                ) : businessData ? (
                   <GiftCard
                     businessName={businessData.businessName}
                     amount={amount || parseInt(customAmount) || 0}
@@ -285,9 +354,9 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                     recipientName={recipientName}
                   />
                 ) : (
-                  <div className="aspect-[1.6/1] rounded-2xl bg-muted flex items-center justify-center">
-                    <p className="text-muted-foreground">
-                      Analyze a business to see your gift card
+                  <div className="aspect-[1.6/1] rounded-2xl bg-muted flex items-center justify-center px-4">
+                    <p className="text-center text-muted-foreground">
+                      Gift card generated after scanning business website
                     </p>
                   </div>
                 )}
@@ -296,6 +365,37 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
           </div>
         </div>
       </div>
+
+      {/* Fullscreen Preview Modal (Mobile only) */}
+      {fullscreenPreview && businessData && (
+        <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-4 lg:hidden">
+          <div className="w-full flex justify-between items-center mb-4">
+            <div className="text-sm text-muted-foreground">
+              Rotate your device to landscape for best viewing
+            </div>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setFullscreenPreview(false)}
+              data-testid="button-close-preview"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+          <div className="w-full max-w-4xl">
+            <GiftCard
+              businessName={businessData.businessName}
+              amount={amount || parseInt(customAmount) || 0}
+              emoji={businessData.emoji}
+              brandColors={businessData.brandColors}
+              vibe={businessData.vibe}
+              message={message}
+              recipientName={recipientName}
+              size="large"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
