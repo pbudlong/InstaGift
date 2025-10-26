@@ -24,7 +24,7 @@ export default function GiftCard({
   return (
     <div 
       className={`relative overflow-hidden rounded-2xl shadow-2xl ${
-        size === 'large' ? 'aspect-[1.85/1] sm:aspect-[1.6/1] w-full max-w-2xl' : 'aspect-[1.85/1] sm:aspect-[1.6/1] w-full'
+        size === 'large' ? 'aspect-[1.2/1] sm:aspect-[1.6/1] w-full max-w-2xl' : 'aspect-[1.2/1] sm:aspect-[1.6/1] w-full'
       }`}
       style={{ background: gradient }}
       data-testid="gift-card"
@@ -37,10 +37,10 @@ export default function GiftCard({
         }} />
       </div>
       
-      <div className="relative h-full p-3 sm:p-6 md:p-8 flex flex-col justify-between text-white">
+      <div className="relative h-full p-4 sm:p-6 md:p-8 flex flex-col justify-between text-white">
         {/* Top section */}
         <div className="flex items-start justify-between gap-2">
-          <div className="text-4xl sm:text-8xl md:text-9xl leading-none" data-testid="gift-emoji">{emoji}</div>
+          <div className="text-6xl sm:text-8xl md:text-9xl leading-none" data-testid="gift-emoji">{emoji}</div>
           {recipientName && (
             <div className="text-right">
               <div className="text-xs sm:text-base md:text-lg opacity-90 leading-tight">Gift Card for</div>
@@ -51,11 +51,11 @@ export default function GiftCard({
         
         {/* Middle section - Business name */}
         <div className="max-w-[85%]">
-          <h3 className="text-2xl sm:text-4xl md:text-6xl font-bold font-display leading-tight" data-testid="text-business-name">
+          <h3 className="text-3xl sm:text-4xl md:text-6xl font-bold font-display leading-tight" data-testid="text-business-name">
             {businessName}
           </h3>
           {vibe && (
-            <p className="text-xs sm:text-base md:text-xl mt-0.5 sm:mt-2 opacity-90 font-light italic line-clamp-1 sm:line-clamp-2" data-testid="text-vibe">
+            <p className="text-sm sm:text-base md:text-xl mt-1 sm:mt-2 opacity-90 font-light italic line-clamp-2" data-testid="text-vibe">
               {vibe}
             </p>
           )}
@@ -64,14 +64,14 @@ export default function GiftCard({
         {/* Bottom section */}
         <div className="flex items-end justify-between gap-2">
           {message && (
-            <div className="flex-1 flex items-end">
-              <p className="text-sm sm:text-2xl md:text-3xl font-script italic opacity-95 line-clamp-1 sm:line-clamp-3 leading-tight" data-testid="text-message">
+            <div className="flex-1 flex items-end mr-2">
+              <p className="text-lg sm:text-2xl md:text-3xl font-script italic opacity-95 line-clamp-2" data-testid="text-message">
                 "{message}"
               </p>
             </div>
           )}
           <div className="text-right flex items-end shrink-0">
-            <div className="text-3xl sm:text-6xl md:text-8xl font-bold leading-none" data-testid="text-amount">
+            <div className="text-4xl sm:text-6xl md:text-8xl font-bold leading-none" data-testid="text-amount">
               ${amount}
             </div>
           </div>
