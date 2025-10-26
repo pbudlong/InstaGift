@@ -11,10 +11,73 @@ export interface ScrapedWebsiteData {
   rawText: string;
 }
 
-export async function scrapeWebsite(url: string): Promise<ScrapedWebsiteData> {
+export class URLValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'URLValidationError';
+  }
+}
+
+function validateUrl(urlString: string): void {
+  let parsedUrl: URL;
+  
   try {
-    console.log(`Scraping website: ${url}`);
-    
+    parsedUrl = new URL(urlString);
+  } catch {
+    throw new URLValidationError('Invalid URL format');
+  }
+
+  if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+    throw new URLValidationError('Only HTTP and HTTPS protocols are allowed');
+  }
+
+  const hostname = parsedUrl.hostname.toLowerCase();
+
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+    throw new URLValidationError('IP addresses are not allowed for security reasons');
+  }
+
+  if (/^[0-9a-f:]+$/i.test(hostname)) {
+    throw new URLValidationError('IPv6 addresses are not allowed for security reasons');
+  }
+
+  const blockedHosts = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    '169.254.169.254',
+    'metadata.google.internal',
+  ];
+
+  if (blockedHosts.includes(hostname)) {
+    throw new URLValidationError('Access to this host is not allowed for security reasons');
+  }
+
+  const privateRanges = [
+    /^10\./,
+    /^172\.(1[6-9]|2[0-9]|3[0-1])\./,
+    /^192\.168\./,
+    /^169\.254\./,
+  ];
+
+  for (const range of privateRanges) {
+    if (range.test(hostname)) {
+      throw new URLValidationError('Access to private network ranges is not allowed for security reasons');
+    }
+  }
+
+  if (!hostname.includes('.')) {
+    throw new URLValidationError('URL must be a valid domain name');
+  }
+}
+
+export async function scrapeWebsite(url: string): Promise<ScrapedWebsiteData> {
+  console.log(`Scraping website: ${url}`);
+  
+  validateUrl(url);
+  console.log('URL validation passed');
+  
+  try {
     const response = await axios.get(url, {
       timeout: 10000,
       headers: {
@@ -26,43 +89,18 @@ export async function scrapeWebsite(url: string): Promise<ScrapedWebsiteData> {
     const html = response.data;
     const $ = cheerio.load(html);
 
-    // Remove script, style, and nav elements to get clean content
-    $('script, style, nav, footer, header').remove();
-
-    // Extract title
     const title = $('title').text().trim() || 
                   $('meta[property="og:title"]').attr('content') || 
                   $('h1').first().text().trim() || 
                   '';
 
-    // Extract description
     const description = $('meta[name="description"]').attr('content') || 
                        $('meta[property="og:description"]').attr('content') || 
                        $('p').first().text().trim() || 
                        '';
 
-    // Extract headings (h1, h2, h3)
-    const headings: string[] = [];
-    $('h1, h2, h3').each((_, el) => {
-      const text = $(el).text().trim();
-      if (text && text.length < 200) {
-        headings.push(text);
-      }
-    });
-
-    // Extract paragraphs
-    const paragraphs: string[] = [];
-    $('p').each((_, el) => {
-      const text = $(el).text().trim();
-      if (text && text.length > 20 && text.length < 500) {
-        paragraphs.push(text);
-      }
-    });
-
-    // Extract colors from CSS and inline styles
     const colors = new Set<string>();
     
-    // From inline styles
     $('[style]').each((_, el) => {
       const style = $(el).attr('style') || '';
       const colorMatches = style.match(/#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|rgb\([^)]+\)/g);
@@ -71,7 +109,6 @@ export async function scrapeWebsite(url: string): Promise<ScrapedWebsiteData> {
       }
     });
 
-    // From style tags
     $('style').each((_, el) => {
       const css = $(el).html() || '';
       const colorMatches = css.match(/#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}/g);
@@ -80,24 +117,40 @@ export async function scrapeWebsite(url: string): Promise<ScrapedWebsiteData> {
       }
     });
 
-    // From meta theme-color
     const themeColor = $('meta[name="theme-color"]').attr('content');
     if (themeColor) {
       colors.add(themeColor);
     }
 
-    // Get body text for general analysis
+    $('script, style, nav, footer, header').remove();
+
+    const headings: string[] = [];
+    $('h1, h2, h3').each((_, el) => {
+      const text = $(el).text().trim();
+      if (text && text.length < 200) {
+        headings.push(text);
+      }
+    });
+
+    const paragraphs: string[] = [];
+    $('p').each((_, el) => {
+      const text = $(el).text().trim();
+      if (text && text.length > 20 && text.length < 500) {
+        paragraphs.push(text);
+      }
+    });
+
     const rawText = $('body').text()
       .replace(/\s+/g, ' ')
       .trim()
-      .substring(0, 3000); // Limit to first 3000 chars
+      .substring(0, 3000);
 
     const result: ScrapedWebsiteData = {
       title,
       description,
-      headings: headings.slice(0, 10), // Top 10 headings
-      paragraphs: paragraphs.slice(0, 5), // Top 5 paragraphs
-      colors: Array.from(colors).slice(0, 20), // Top 20 colors
+      headings: headings.slice(0, 10),
+      paragraphs: paragraphs.slice(0, 5),
+      colors: Array.from(colors).slice(0, 20),
       url,
       rawText,
     };
@@ -112,9 +165,12 @@ export async function scrapeWebsite(url: string): Promise<ScrapedWebsiteData> {
 
     return result;
   } catch (error: any) {
-    console.error('Scraping error:', error.message);
+    if (error instanceof URLValidationError) {
+      throw error;
+    }
     
-    // Return minimal data on error
+    console.warn('Scraping failed, will use fallback:', error.message);
+    
     return {
       title: '',
       description: '',
@@ -131,7 +187,6 @@ export function buildEnrichedPrompt(url: string, scrapedData: ScrapedWebsiteData
   const hasContent = scrapedData.title || scrapedData.headings.length > 0;
   
   if (!hasContent) {
-    // Fallback to URL-based analysis if scraping failed
     return `You are analyzing a local business website to create a branded gift card. 
       
 Given this URL: ${url}

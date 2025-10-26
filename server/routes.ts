@@ -8,7 +8,7 @@ import { businessAnalysisSchema, insertGiftSchema, insertAccessRequestSchema } f
 import { z } from "zod";
 import { sendPasswordRequestEmail, sendApprovedAccessEmail, sendAdminPhoneRequestEmail, sendAdminPasswordSMSCopy } from "./gmail";
 import { generateGiftPassword } from "./password-generator";
-import { scrapeWebsite, buildEnrichedPrompt } from "./scraper";
+import { scrapeWebsite, buildEnrichedPrompt, URLValidationError } from "./scraper";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required secret: STRIPE_SECRET_KEY');
@@ -122,7 +122,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Step 1: Scrape the website for real content
       console.log('Step 1: Scraping website for real content...');
-      const scrapedData = await scrapeWebsite(url);
+      let scrapedData;
+      try {
+        scrapedData = await scrapeWebsite(url);
+      } catch (error: any) {
+        if (error instanceof URLValidationError) {
+          console.error('URL validation failed:', error.message);
+          return res.status(400).json({ message: error.message });
+        }
+        throw error;
+      }
       
       // Step 2: Build enriched prompt with real website data
       const prompt = buildEnrichedPrompt(url, scrapedData);
