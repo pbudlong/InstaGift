@@ -121,7 +121,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4 mr-2" />
-                      Analyze with AI
+                      Create Gift Card with AI
                     </>
                   )}
                 </Button>
