@@ -15,7 +15,7 @@ interface GiftCreatorProps {
 }
 
 export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
-  const [url, setUrl] = useState('https://sparkleautospa.com');
+  const [url, setUrl] = useState('https://towercarwash.com');
   const [analyzing, setAnalyzing] = useState(false);
   const [businessData, setBusinessData] = useState<BusinessAnalysis | null>(null);
   
@@ -101,7 +101,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                   <Input
                     id="url"
                     type="url"
-                    placeholder="https://sparkleautospa.com"
+                    placeholder="https://towercarwash.com"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     data-testid="input-business-url"

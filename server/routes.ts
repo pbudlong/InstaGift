@@ -8,6 +8,7 @@ import { businessAnalysisSchema, insertGiftSchema, insertAccessRequestSchema } f
 import { z } from "zod";
 import { sendPasswordRequestEmail, sendApprovedAccessEmail, sendAdminPhoneRequestEmail, sendAdminPasswordSMSCopy } from "./gmail";
 import { generateGiftPassword } from "./password-generator";
+import { scrapeWebsite, buildEnrichedPrompt } from "./scraper";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required secret: STRIPE_SECRET_KEY');
@@ -119,28 +120,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "URL is required" });
       }
 
-      const prompt = `You are analyzing a local business website to create a branded gift card. 
+      // Step 1: Scrape the website for real content
+      console.log('Step 1: Scraping website for real content...');
+      const scrapedData = await scrapeWebsite(url);
       
-Given this URL: ${url}
+      // Step 2: Build enriched prompt with real website data
+      const prompt = buildEnrichedPrompt(url, scrapedData);
 
-Please analyze the business and return a JSON object with the following structure:
-{
-  "businessName": "The business name",
-  "businessType": "Type of business (e.g., 'Coffee Shop', 'Auto Detailing')",
-  "brandColors": ["#hex1", "#hex2"],
-  "emoji": "A single emoji that represents the business",
-  "vibe": "Short description of the brand vibe (e.g., 'Cozy and artisanal')",
-  "description": "One sentence description of what the business offers"
-}
-
-Make educated guesses based on the URL and common business patterns. Be creative but realistic.
-Return ONLY the JSON object, no other text.`;
-
+      // Step 3: Send to AI for analysis
       let responseText = '';
       
       try {
         if (openai) {
-          console.log("Using OpenAI for business analysis...");
+          console.log("Step 2: Using OpenAI for business analysis...");
           const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [{
@@ -178,6 +170,7 @@ Return ONLY the JSON object, no other text.`;
         console.log("Anthropic analysis successful");
       }
       
+      // Step 4: Parse and validate the AI response
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new Error("Failed to extract JSON from AI response");
@@ -185,6 +178,12 @@ Return ONLY the JSON object, no other text.`;
 
       const parsedData = JSON.parse(jsonMatch[0]);
       const validatedData = businessAnalysisSchema.parse(parsedData);
+      
+      console.log('Analysis complete:', {
+        businessName: validatedData.businessName,
+        businessType: validatedData.businessType,
+        scrapedContent: scrapedData.title ? 'Yes' : 'No (fallback mode)',
+      });
       
       res.json(validatedData);
     } catch (error: any) {
