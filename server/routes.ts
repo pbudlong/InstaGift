@@ -126,32 +126,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log('=== CLAUDE WEB_SEARCH START ===');
           console.log('URL:', url);
           console.log('Creating API request with web_search tool...');
+          const startTime = Date.now();
 
           const message = await anthropic.messages.create({
             model: "claude-sonnet-4-5",
-            max_tokens: 2048,
+            max_tokens: 900,
             messages: [{
               role: "user",
-              content: `Search for and analyze this business website: ${url}
+              content: `Analyze the business at: ${url}
 
-Use web search to find real information about this business, then return ONLY a JSON object with this exact structure:
+Perform ONE web search to gather information, then return JSON only (no explanations):
+
 {
-  "businessName": "The actual business name from the website",
-  "businessType": "Type of business (e.g., 'Coffee Shop', 'Auto Detailing', 'Car Wash')",
-  "brandColors": ["#hex1", "#hex2"] (extract actual brand colors from the website),
-  "emoji": "A single emoji that represents the business",
-  "vibe": "Short description of the brand vibe based on website content",
-  "description": "One sentence description of what the business offers"
+  "businessName": "Business name from website",
+  "businessType": "Type (e.g., Restaurant, Car Wash, Salon)",
+  "brandColors": ["#hex1", "#hex2"],
+  "emoji": "🔍",
+  "vibe": "Short tagline (e.g., Fast, friendly service)",
+  "description": "1-2 sentence description"
 }
 
-Return ONLY the JSON object, no other text.`
+Return ONLY valid JSON.`
             }],
             tools: [{
               type: "web_search_20250305",
               name: "web_search",
-              max_uses: 3
+              max_uses: 1
             }]
           });
+          
+          const endTime = Date.now();
+          console.log(`Anthropic request completed in ${endTime - startTime}ms`);
 
           console.log('API Response received');
           console.log('Content blocks:', message.content.length);

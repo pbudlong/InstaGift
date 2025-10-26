@@ -29,10 +29,10 @@ export default function GiftCard({
       style={{ background: gradient }}
       data-testid="gift-card"
     >
-      {/* Subtle pattern overlay - use black dots that work on any background */}
-      <div className="absolute inset-0 opacity-10">
+      {/* Subtle pattern overlay - use semi-transparent black dots that work on any background */}
+      <div className="absolute inset-0 opacity-[0.08]">
         <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.3) 1px, transparent 0)',
+          backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0, 0, 0, 0.5) 1px, transparent 0)',
           backgroundSize: '24px 24px'
         }} />
       </div>
@@ -50,12 +50,12 @@ export default function GiftCard({
         </div>
         
         {/* Middle section - Business name */}
-        <div>
+        <div className="max-w-[85%]">
           <h3 className="text-4xl md:text-6xl font-bold font-display" data-testid="text-business-name">
             {businessName}
           </h3>
           {vibe && (
-            <p className="text-lg md:text-2xl mt-2 opacity-90 font-light italic" data-testid="text-vibe">
+            <p className="text-xs md:text-base mt-2 opacity-90 font-light italic line-clamp-2" data-testid="text-vibe">
               {vibe}
             </p>
           )}
