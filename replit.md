@@ -69,8 +69,9 @@ Preferred communication style: Simple, everyday language.
    - Gift creation: URL input → AI analysis with progress bar → customization → checkout
    - **Before analysis**: Blank preview shows "Gift card generated after scanning business website"
    - **During analysis**: Animated progress bar (0-100% over ~10 seconds) with "Analyzing business..." text
-   - **After analysis**: Gift card preview with expand button (mobile only)
-   - **Mobile fullscreen preview**: Maximize icon opens fullscreen modal with landscape hint, close button in visible header
+   - **After analysis**: Gift card preview displays at full width (mobile) matching recipient view
+   - **Preview behavior**: Updates dynamically as user changes amount, message, or recipient name
+   - **Card spacing**: Reduced vertical gap between business name and tagline by 50% for better use of space
    - Payment processing via Stripe Elements (test card: 4242 4242 4242 4242)
 4. **Payment Success Page**:
    - Preview gift card link (shows card design only)
