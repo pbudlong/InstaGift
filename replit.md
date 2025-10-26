@@ -135,8 +135,17 @@ Preferred communication style: Simple, everyday language.
 - Test environment uses: `TESTING_STRIPE_SECRET_KEY`, `TESTING_VITE_STRIPE_PUBLIC_KEY`
 
 **AI Services**
-- Anthropic Claude API for intelligent business website analysis
-- Environment variable: `ANTHROPIC_API_KEY`
+- **Anthropic Claude API (Primary)** for intelligent business website analysis
+  - Uses Claude's Web Fetch Tool (`web_fetch_20250910`) for secure, real-time website content extraction
+  - Fetches actual business content, brand colors, and metadata directly from live websites
+  - No custom scraping code - Claude handles all security (SSRF protection, DNS rebinding prevention)
+  - Environment variable: `ANTHROPIC_API_KEY`
+  - Model: `claude-3-5-sonnet-20241022`
+- **OpenAI GPT-4 (Fallback)** for URL-based business analysis when Anthropic is unavailable
+  - Analyzes business from URL only (no web fetching capability)
+  - Provides degraded but functional service if Claude is down
+  - Environment variable: `OPENAI_API_KEY`
+  - Model: `gpt-4o-mini`
 - Structured JSON output parsing from AI responses for business metadata extraction
 
 **Frontend Libraries**

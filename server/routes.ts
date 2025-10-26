@@ -119,18 +119,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "URL is required" });
       }
 
-      console.log('Analyzing business website with Claude web_fetch:', url);
+      let responseText = '';
+      
+      try {
+        if (anthropic) {
+          console.log('Analyzing business website with Claude web_fetch:', url);
 
-      if (!anthropic) {
-        return res.status(500).json({ message: "Anthropic API not configured" });
-      }
-
-      const message = await anthropic.messages.create({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 2048,
-        messages: [{
-          role: "user",
-          content: `Please fetch and analyze this business website: ${url}
+          const message = await anthropic.messages.create({
+            model: "claude-3-5-sonnet-20241022",
+            max_tokens: 2048,
+            messages: [{
+              role: "user",
+              content: `Please fetch and analyze this business website: ${url}
 
 After fetching the website content, analyze it and return ONLY a JSON object with this exact structure:
 {
@@ -143,25 +143,58 @@ After fetching the website content, analyze it and return ONLY a JSON object wit
 }
 
 Return ONLY the JSON object, no other text.`
-        }],
-        tools: [{
-          type: "web_fetch_20250910",
-          name: "web_fetch",
-          max_uses: 3
-        }],
-        extra_headers: {
-          "anthropic-beta": "web-fetch-2025-09-10"
-        } as any
-      });
+            }],
+            tools: [{
+              type: "web_fetch_20250910",
+              name: "web_fetch",
+              max_uses: 3
+            }],
+            extra_headers: {
+              "anthropic-beta": "web-fetch-2025-09-10"
+            } as any
+          });
 
-      let responseText = '';
-      for (const block of message.content) {
-        if (block.type === 'text') {
-          responseText += block.text;
+          for (const block of message.content) {
+            if (block.type === 'text') {
+              responseText += block.text;
+            }
+          }
+          console.log('Claude web_fetch analysis successful');
+        } else {
+          throw new Error("Anthropic not available");
         }
-      }
+      } catch (anthropicError: any) {
+        console.error("Anthropic failed:", anthropicError.message);
+        
+        if (!openai) {
+          throw new Error("Both Anthropic and OpenAI are unavailable");
+        }
+        
+        console.log("Falling back to OpenAI (URL-based analysis without web fetch)...");
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [{
+            role: "user",
+            content: `Analyze this business website URL and infer details about the business: ${url}
 
-      console.log('Claude response received');
+Return ONLY a JSON object with this structure:
+{
+  "businessName": "Inferred business name",
+  "businessType": "Type of business",
+  "brandColors": ["#hex1", "#hex2"],
+  "emoji": "Relevant emoji",
+  "vibe": "Brand vibe",
+  "description": "One sentence description"
+}
+
+Return ONLY the JSON object, no other text.`
+          }],
+          max_tokens: 1024,
+        });
+        
+        responseText = completion.choices[0]?.message?.content || '';
+        console.log("OpenAI fallback analysis successful");
+      }
 
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
