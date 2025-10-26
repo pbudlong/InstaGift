@@ -128,6 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const message = await anthropic.messages.create({
             model: "claude-3-5-sonnet-20241022",
             max_tokens: 2048,
+            betas: ["web-fetch-2025-09-10"],
             messages: [{
               role: "user",
               content: `Please fetch and analyze this business website: ${url}
@@ -148,10 +149,7 @@ Return ONLY the JSON object, no other text.`
               type: "web_fetch_20250910",
               name: "web_fetch",
               max_uses: 3
-            }],
-            extra_headers: {
-              "anthropic-beta": "web-fetch-2025-09-10"
-            } as any
+            }] as any
           });
 
           for (const block of message.content) {
