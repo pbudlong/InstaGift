@@ -123,33 +123,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       try {
         if (anthropic) {
-          console.log('Analyzing business website with Claude web_fetch:', url);
+          console.log('Analyzing business with Claude:', url);
 
           const message = await anthropic.messages.create({
             model: "claude-3-5-sonnet-20241022",
             max_tokens: 2048,
-            betas: ["web-fetch-2025-09-10"],
             messages: [{
               role: "user",
-              content: `Please fetch and analyze this business website: ${url}
+              content: `Analyze this business website URL and provide details: ${url}
 
-After fetching the website content, analyze it and return ONLY a JSON object with this exact structure:
+Based on the URL and your knowledge, return ONLY a JSON object with this exact structure:
 {
-  "businessName": "The business name from the website",
+  "businessName": "The business name",
   "businessType": "Type of business (e.g., 'Coffee Shop', 'Auto Detailing', 'Car Wash')",
-  "brandColors": ["#hex1", "#hex2"] (extract actual colors from the website or suggest fitting ones),
+  "brandColors": ["#hex1", "#hex2"] (suggest fitting colors based on business type),
   "emoji": "A single emoji that represents the business",
-  "vibe": "Short description of the brand vibe based on website content",
+  "vibe": "Short description of the brand vibe",
   "description": "One sentence description of what the business offers"
 }
 
 Return ONLY the JSON object, no other text.`
-            }],
-            tools: [{
-              type: "web_fetch_20250910",
-              name: "web_fetch",
-              max_uses: 3
-            }] as any
+            }]
           });
 
           for (const block of message.content) {
@@ -157,7 +151,7 @@ Return ONLY the JSON object, no other text.`
               responseText += block.text;
             }
           }
-          console.log('Claude web_fetch analysis successful');
+          console.log('Claude analysis successful');
         } else {
           throw new Error("Anthropic not available");
         }
