@@ -190,6 +190,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                       vibe={businessData.vibe}
                       message={message}
                       recipientName={recipientName}
+                      size="large"
                     />
                   ) : (
                     <div className="aspect-[1.6/1] rounded-2xl bg-muted flex items-center justify-center px-4">
@@ -339,6 +340,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
                     vibe={businessData.vibe}
                     message={message}
                     recipientName={recipientName}
+                    size="large"
                   />
                 ) : (
                   <div className="aspect-[1.6/1] rounded-2xl bg-muted flex items-center justify-center px-4">
