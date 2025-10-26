@@ -11,6 +11,7 @@ interface GiftData {
   businessType: string;
   brandColors: string[];
   emoji: string;
+  vibe: string;
   amount: number;
   message?: string;
   recipientName: string;
