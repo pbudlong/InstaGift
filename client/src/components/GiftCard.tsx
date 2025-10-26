@@ -27,10 +27,10 @@ export default function GiftCard({
       style={{ background: gradient }}
       data-testid="gift-card"
     >
-      {/* Subtle pattern overlay */}
+      {/* Subtle pattern overlay - use black dots that work on any background */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+          backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,0,0,0.3) 1px, transparent 0)',
           backgroundSize: '24px 24px'
         }} />
       </div>

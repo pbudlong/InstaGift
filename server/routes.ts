@@ -170,12 +170,14 @@ Return ONLY the JSON object, no other text.`
           }
           
           console.log('Total response text length:', responseText.length);
+          console.log('Raw response text:', responseText);
           console.log('=== CLAUDE WEB_SEARCH SUCCESS ===');
         } else {
           throw new Error("Anthropic not available");
         }
       } catch (anthropicError: any) {
         console.error("Anthropic failed:", anthropicError.message);
+        console.error("Full Anthropic error:", JSON.stringify(anthropicError, null, 2));
         
         if (!openai) {
           throw new Error("Both Anthropic and OpenAI are unavailable");
