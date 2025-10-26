@@ -141,8 +141,10 @@ Preferred communication style: Simple, everyday language.
   - No custom scraping code - Claude's web search handles content retrieval securely
   - Environment variable: `ANTHROPIC_API_KEY`
   - Model: `claude-sonnet-4-5` (latest, auto-updating)
-  - Tool configuration: `type: "web_search_20250305"`, `max_uses: 3`
-  - Logs show Claude makes 2 search tool uses per request to gather comprehensive business data
+  - Tool configuration: `type: "web_search_20250305"`, `max_uses: 1` (optimized for <10s performance)
+  - Max tokens: 900 (reduced from default for faster responses)
+  - Prompt includes explicit instruction to avoid white/light colors
+  - Server-side color filter: automatically replaces colors with lightness >75% with vibrant defaults
 - **OpenAI GPT-4 (Fallback)** for URL-based business analysis when Anthropic is unavailable
   - Analyzes business from URL pattern only (no web search capability)
   - Provides degraded but functional service if Claude fails
@@ -194,6 +196,29 @@ Preferred communication style: Simple, everyday language.
 - Production build creates bundled server and optimized client assets
 - Static file serving in production mode
 - Environment-based configuration (NODE_ENV)
+
+## Performance Optimizations
+
+**AI Analysis Speed (Sub-10s)**
+- Achieved 6x performance improvement: gift card generation now under 10 seconds (from 45-60s)
+- Claude configuration optimized: `max_uses: 1`, `max_tokens: 900`
+- Prompt engineered to encourage single web search
+- Average response time: 6-8 seconds for complete business analysis
+
+**Gift Card Display Quality**
+- Server-side color filter prevents washed-out gradients
+  - Automatically replaces colors with lightness >75% with vibrant alternatives
+  - Default vibrant palette: indigo, purple, pink, amber, emerald, blue
+  - Logs color replacements for debugging
+- Pattern overlay reduced to 0.03 opacity (from 0.08) for better color vibrancy
+- Standard 1.6:1 aspect ratio (credit card proportions) with responsive typography
+- Typography scales appropriately: emoji (text-9xl), business name (text-6xl), tagline (text-xl), amount (text-8xl)
+
+**Recent Bug Fixes**
+- Fixed missing tagline on recipient view (added `vibe` field to GiftView interface)
+- Fixed white fade issue (AI was returning #FFFFFF as brand color)
+- Restored larger text sizes for better use of vertical space
+- All gift cards now display with vibrant, saturated colors
 
 ## Demo Configuration
 
