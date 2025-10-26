@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Sparkles, Loader2, ArrowLeft, Maximize2, X } from 'lucide-react';
+import { Sparkles, Loader2, ArrowLeft } from 'lucide-react';
 import GiftCard from './GiftCard';
 import Logo from './Logo';
 import type { BusinessAnalysis } from '@shared/schema';
@@ -19,7 +19,6 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
   const [url, setUrl] = useState('https://towercarwash.com');
   const [analyzing, setAnalyzing] = useState(false);
   const [businessData, setBusinessData] = useState<BusinessAnalysis | null>(null);
-  const [fullscreenPreview, setFullscreenPreview] = useState(false);
   const [progress, setProgress] = useState(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -169,19 +168,7 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
             <div className="lg:hidden">
               <Card>
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Gift Card Preview</CardTitle>
-                    {businessData && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => setFullscreenPreview(true)}
-                        data-testid="button-expand-preview"
-                      >
-                        <Maximize2 className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
+                  <CardTitle>Gift Card Preview</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {analyzing ? (
@@ -366,36 +353,6 @@ export default function GiftCreator({ onBack, onCheckout }: GiftCreatorProps) {
         </div>
       </div>
 
-      {/* Fullscreen Preview Modal (Mobile only) */}
-      {fullscreenPreview && businessData && (
-        <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-4 lg:hidden">
-          <div className="w-full flex justify-between items-center mb-4">
-            <div className="text-sm text-muted-foreground">
-              Rotate your device to landscape for best viewing
-            </div>
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => setFullscreenPreview(false)}
-              data-testid="button-close-preview"
-            >
-              <X className="w-5 h-5" />
-            </Button>
-          </div>
-          <div className="w-full max-w-4xl">
-            <GiftCard
-              businessName={businessData.businessName}
-              amount={amount || parseInt(customAmount) || 0}
-              emoji={businessData.emoji}
-              brandColors={businessData.brandColors}
-              vibe={businessData.vibe}
-              message={message}
-              recipientName={recipientName}
-              size="large"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
