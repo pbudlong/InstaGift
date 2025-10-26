@@ -55,7 +55,7 @@ export default function GiftCard({
             {businessName}
           </h3>
           {vibe && (
-            <p className="text-xs md:text-base mt-2 opacity-90 font-light italic line-clamp-2" data-testid="text-vibe">
+            <p className="text-base md:text-xl mt-2 opacity-90 font-light italic line-clamp-2" data-testid="text-vibe">
               {vibe}
             </p>
           )}
